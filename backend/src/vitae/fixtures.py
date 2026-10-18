@@ -196,6 +196,23 @@ FIXTURES: Final[tuple[Fixture, ...]] = (
         ),
     ),
     StreamFixture(
+        name="broken-queued-after-started",
+        frames=(
+            SessionEvent(session_id=SESSION, turns_left=19),
+            StartedEvent(),
+            QueuedEvent(position=1),
+            TextEvent(text="I built Shift Notes, a handoff tool for support teams. "),
+            DoneEvent(finish="complete"),
+        ),
+        expected=Expected(
+            outcome="broken",
+            text="",
+            streamed_then_failed=False,
+            session_id=SESSION,
+            sources=(),
+        ),
+    ),
+    StreamFixture(
         name="broken-malformed",
         frames=(
             SessionEvent(session_id=SESSION, turns_left=19),
