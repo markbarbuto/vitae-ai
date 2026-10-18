@@ -1,0 +1,6 @@
+flowchart LR
+  Portfolio["portfolio site<br/>canned answers"] --> PW["Playwright<br/>fake clock, 20 states"]
+  PW --> Golden[("tests/visual/golden/*.png")]
+  V2UI["chat package<br/>in a test page"] -.->|"phase 5"| PW2["same states"]
+  PW2 -.-> Diff{"pixel diff<br/>must be 0"}
+  Golden -.-> Diff

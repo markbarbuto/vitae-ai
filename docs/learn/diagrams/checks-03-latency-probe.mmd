@@ -1,0 +1,7 @@
+flowchart LR
+  Prompts[("tests/evals/latency.yaml<br/>6 questions x 5 paraphrases")] --> PF["promptfoo<br/>one at a time"]
+  PF --> Provider["provider.py"]
+  Provider -->|"one new question at a time"| API["running API"]
+  API -->|"time to first token,<br/>total time"| Provider
+  Provider --> PF
+  PF --> Report["latency-report.mjs<br/>p50 and p95"]

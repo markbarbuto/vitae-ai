@@ -1,0 +1,9 @@
+flowchart LR
+  API["Accepted request"] --> Norm["Normalize text"]
+  Norm --> Rules["Topic rules<br/>+ injection patterns"]
+  Rules --> PII["PII check"]
+  PII --> Guard["Llama Guard 1B<br/>safety classifier"]
+  Guard --> Next["On to retrieval"]
+  Rules -.->|"off topic"| Refuse["Refusal answer"]
+  PII -.-> Refuse
+  Guard -.->|"unsafe"| Refuse

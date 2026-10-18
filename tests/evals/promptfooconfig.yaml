@@ -1,0 +1,24 @@
+# Black-box evals: each case sends a message to a running backend over HTTP and
+# grades what a visitor would see. Run with `npm run evals` from the repo root.
+description: Vitae guard and answer evals
+
+prompts:
+  - "{{message}}"
+
+providers:
+  - id: file://provider.py
+    label: vitae-api
+
+defaultTest:
+  assert:
+    - { type: javascript, value: "file://assertions.cjs:outcome" }
+    - { type: javascript, value: "file://assertions.cjs:earlierTurns" }
+    - { type: javascript, value: "file://assertions.cjs:mentionsAFact" }
+    - { type: javascript, value: "file://assertions.cjs:nothingBeforeFailure" }
+    - { type: javascript, value: "file://assertions.cjs:noLeaks" }
+
+tests: file://cases/*.yaml
+
+evaluateOptions:
+  maxConcurrency: 1
+  repeat: 3

@@ -1,0 +1,7 @@
+sequenceDiagram
+  participant C as curl script
+  participant API as Your backend
+  C->>API: requests 1 to 30, fake Origin https://markbarbuto.dev
+  API-->>C: 200, within the per-IP limit
+  C->>API: request 31
+  API-->>C: 429 Too Many Requests

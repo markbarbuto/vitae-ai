@@ -1,0 +1,5 @@
+flowchart LR
+  Visitor((Visitor)) --> Host["Your portfolio site"]
+  Host --> Chat["Chat component<br/>from npm"]
+  Chat -->|"question"| API["Backend API"]
+  API -->|"answer, streamed"| Chat

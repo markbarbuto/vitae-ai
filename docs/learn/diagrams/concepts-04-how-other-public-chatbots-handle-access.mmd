@@ -1,0 +1,11 @@
+flowchart TB
+  subgraph Hosted["Hosted, many customers: Intercom, Crisp, Algolia"]
+    P1["Browser"] -->|"public key + Origin"| P2["Vendor server<br/>key picks the customer"]
+  end
+  subgraph Proxy["Secret key on a server: sites using OpenAI"]
+    X1["Browser"] -->|"no key"| X2["Site's own server<br/>holds secret key"]
+    X2 -->|"secret key"| X3["OpenAI"]
+  end
+  subgraph Self["Self-hosted, one owner: Vitae"]
+    S1["Browser"] -->|"Origin only"| S2["Owner's backend<br/>origin allowlist + IP limits"]
+  end

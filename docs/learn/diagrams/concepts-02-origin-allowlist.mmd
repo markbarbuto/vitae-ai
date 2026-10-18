@@ -1,0 +1,6 @@
+sequenceDiagram
+  participant E as Browser on someone-else.dev
+  participant API as Your backend
+  E->>API: POST /chat, Origin https://someone-else.dev
+  API->>API: someone-else.dev not on the allowlist
+  API-->>E: 403 Forbidden

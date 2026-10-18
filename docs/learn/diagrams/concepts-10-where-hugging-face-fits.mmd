@@ -1,0 +1,4 @@
+flowchart LR
+  HF[("Hugging Face<br/>model files")] -->|"download once,<br/>pinned by hash"| Disk["models/ on the server"]
+  Disk --> L["llama.cpp containers"]
+  HF -.-x|"not used: hosted inference<br/>(costs money, data leaves)"| L

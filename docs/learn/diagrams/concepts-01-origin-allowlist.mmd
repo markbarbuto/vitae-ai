@@ -1,0 +1,6 @@
+sequenceDiagram
+  participant B as Browser on markbarbuto.dev
+  participant API as Your backend
+  B->>API: POST /chat, Origin https://markbarbuto.dev
+  API->>API: origin in VITAE_ALLOWED_ORIGINS? IP under limit?
+  API-->>B: 200, streamed answer

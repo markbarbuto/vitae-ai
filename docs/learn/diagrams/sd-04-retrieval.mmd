@@ -1,0 +1,10 @@
+flowchart LR
+  subgraph Offline["Ingest, run once per content change"]
+    Docs["knowledge/*.md"] --> Split["Split into passages"]
+    Split --> EmbedA["Embed each passage"]
+    EmbedA --> Index[("Index<br/>passages + vectors")]
+  end
+  Q["Guarded question"] --> EmbedB["Embed question"]
+  EmbedB --> Search["Closest passages<br/>+ keyword score"]
+  Index --> Search
+  Search --> Top["Top passages,<br/>within a token budget"]

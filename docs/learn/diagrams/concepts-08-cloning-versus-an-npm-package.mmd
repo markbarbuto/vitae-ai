@@ -1,0 +1,10 @@
+flowchart LR
+  subgraph Clone
+    R1["vitae repo"] -->|"copy source + Tailwind config"| A1["portfolio repo"]
+    R1 -.->|"every update merged by hand"| A1
+  end
+  subgraph Package
+    R2["vitae repo"] -->|"npm publish v2.1.0"| N[("npm registry")]
+    N -->|"npm install"| A2["portfolio"]
+    N -->|"npm install"| A3["any other app"]
+  end

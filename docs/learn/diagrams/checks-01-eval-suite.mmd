@@ -1,0 +1,8 @@
+flowchart LR
+  Cases[("tests/evals/cases/*.yaml<br/>message + expected outcome")] --> PF["promptfoo"]
+  PF --> Provider["provider.py<br/>speaks the API contract"]
+  Provider -->|"HTTP, like a browser"| API["running API"]
+  API --> Provider
+  Provider -->|"visible text, outcome,<br/>text shown before a failure?"| PF
+  PF --> Graders["assertions.cjs<br/>graders"]
+  Graders --> Report[("promptfoo results<br/>3 runs per case")]

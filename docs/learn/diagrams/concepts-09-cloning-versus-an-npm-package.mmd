@@ -1,0 +1,4 @@
+flowchart LR
+  Pkg["packages/chat<br/>local folder"] -->|"workspace link or npm pack"| Play["playground"]
+  Pkg -->|"workspace link or npm pack"| Port["portfolio, local dev"]
+  Pkg -.->|"last phase: npm publish"| N[("npm registry")]

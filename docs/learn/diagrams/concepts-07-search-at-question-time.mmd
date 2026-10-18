@@ -1,0 +1,7 @@
+flowchart LR
+  Q["Where did he study?"] --> M["Same embedding model"]
+  M --> QV["[0.11, -0.38, 0.90, ...]"]
+  QV --> S{"Closest vectors<br/>+ keyword score"}
+  I[("Index")] --> S
+  S --> T["Degree passage<br/>Coursework passage"]
+  T --> P["Prompt for the generator"]

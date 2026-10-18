@@ -1,0 +1,19 @@
+{
+  "name": "vitae",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "evals": "promptfoo eval --env-file tests/evals/promptfoo.env --no-cache --no-share -c tests/evals/promptfooconfig.yaml",
+    "evals:latency": "promptfoo eval --env-file tests/evals/promptfoo.env --no-cache --no-share -c tests/evals/latency.yaml -o tests/evals/results/latency.json && node tests/evals/latency-report.mjs tests/evals/results/latency.json",
+    "evals:view": "promptfoo view",
+    "golden:capture": "node tests/visual/capture.mjs --write",
+    "golden:check": "node tests/visual/capture.mjs",
+    "docs:diagrams": "node docs/learn/render-diagrams.mjs"
+  },
+  "devDependencies": {
+    "pixelmatch": "^8.0.0",
+    "playwright": "^1.64.1",
+    "pngjs": "^7.0.0",
+    "promptfoo": "0.120.19"
+  }
+}

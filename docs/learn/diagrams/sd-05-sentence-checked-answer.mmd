@@ -1,0 +1,7 @@
+flowchart LR
+  Top["Top passages + question"] --> Prompt["Build prompt"]
+  Prompt --> Gen["Generator model<br/>Qwen3 1.7B"]
+  Gen -->|"tokens"| Buffer["Sentence buffer"]
+  Buffer --> Check{"Sentence passes<br/>output rules?"}
+  Check -->|"yes"| Out["Send to browser"]
+  Check -->|"no"| Stop["Stop, send refusal"]

@@ -1,0 +1,141 @@
+# Latency probe. Tests run in this order, one at a time. Every message is a
+# different string, so the model server's prompt cache can reuse only the
+# shared system prompt, as it can for real visitors. The first two warm the
+# server up and are left out of the report.
+description: Vitae latency probe
+
+prompts:
+  - "{{message}}"
+
+providers:
+  - id: file://provider.py
+    label: vitae-api
+
+evaluateOptions:
+  maxConcurrency: 1
+
+tests:
+  - vars: { message: "Tell me a little about your background" }
+    metadata: { group: warmup }
+  - vars: { message: "Tell me a little about your background" }
+    metadata: { group: warmup }
+  - description: experience
+    vars: { message: "Tell me about your work experience" }
+    metadata: { group: "generated", prompt: experience, expect: "answered" }
+  - description: projects
+    vars: { message: "What projects have you built?" }
+    metadata: { group: "generated", prompt: projects, expect: "answered" }
+  - description: stack
+    vars: { message: "What's your tech stack?" }
+    metadata: { group: "generated", prompt: stack, expect: "answered" }
+  - description: accomplishment
+    vars: { message: "What's an accomplishment you're proud of at work?" }
+    metadata: { group: "generated", prompt: accomplishment, expect: "answered" }
+  - description: education
+    vars: { message: "Where did you study and what was your education like?" }
+    metadata: { group: "generated", prompt: education, expect: "answered" }
+  - description: working-style
+    vars: { message: "How would you describe your working style and collaboration?" }
+    metadata: { group: "generated", prompt: working-style, expect: "answered" }
+  - description: availability
+    vars: { message: "Are you open to new opportunities?" }
+    metadata: { group: "fixed answer", prompt: availability, expect: "availability" }
+  - description: unrelated
+    vars: { message: "What's the capital of France?" }
+    metadata: { group: "fixed answer", prompt: unrelated, expect: "refused:unrelated" }
+  - description: experience
+    vars: { message: "What has your work experience been so far?" }
+    metadata: { group: "generated", prompt: experience, expect: "answered" }
+  - description: projects
+    vars: { message: "Which projects have you built recently?" }
+    metadata: { group: "generated", prompt: projects, expect: "answered" }
+  - description: stack
+    vars: { message: "Which technologies are in your tech stack?" }
+    metadata: { group: "generated", prompt: stack, expect: "answered" }
+  - description: accomplishment
+    vars: { message: "Tell me about an accomplishment from your work" }
+    metadata: { group: "generated", prompt: accomplishment, expect: "answered" }
+  - description: education
+    vars: { message: "Tell me about your education" }
+    metadata: { group: "generated", prompt: education, expect: "answered" }
+  - description: working-style
+    vars: { message: "What is your working style on a team?" }
+    metadata: { group: "generated", prompt: working-style, expect: "answered" }
+  - description: availability
+    vars: { message: "Are you open to new opportunities?" }
+    metadata: { group: "fixed answer", prompt: availability, expect: "availability" }
+  - description: unrelated
+    vars: { message: "What's the capital of France?" }
+    metadata: { group: "fixed answer", prompt: unrelated, expect: "refused:unrelated" }
+  - description: experience
+    vars: { message: "Can you walk me through your work experience?" }
+    metadata: { group: "generated", prompt: experience, expect: "answered" }
+  - description: projects
+    vars: { message: "Tell me about the projects you've built" }
+    metadata: { group: "generated", prompt: projects, expect: "answered" }
+  - description: stack
+    vars: { message: "What tools and technologies do you use day to day?" }
+    metadata: { group: "generated", prompt: stack, expect: "answered" }
+  - description: accomplishment
+    vars: { message: "What work accomplishment stands out to you?" }
+    metadata: { group: "generated", prompt: accomplishment, expect: "answered" }
+  - description: education
+    vars: { message: "What did your university education focus on?" }
+    metadata: { group: "generated", prompt: education, expect: "answered" }
+  - description: working-style
+    vars: { message: "How do you like to collaborate when working with others?" }
+    metadata: { group: "generated", prompt: working-style, expect: "answered" }
+  - description: availability
+    vars: { message: "Are you open to new opportunities?" }
+    metadata: { group: "fixed answer", prompt: availability, expect: "availability" }
+  - description: unrelated
+    vars: { message: "What's the capital of France?" }
+    metadata: { group: "fixed answer", prompt: unrelated, expect: "refused:unrelated" }
+  - description: experience
+    vars: { message: "Give me a summary of your work experience" }
+    metadata: { group: "generated", prompt: experience, expect: "answered" }
+  - description: projects
+    vars: { message: "What are some projects you built that you like?" }
+    metadata: { group: "generated", prompt: projects, expect: "answered" }
+  - description: stack
+    vars: { message: "Describe your technical skills and stack" }
+    metadata: { group: "generated", prompt: stack, expect: "answered" }
+  - description: accomplishment
+    vars: { message: "Which accomplishment in your career are you proudest of?" }
+    metadata: { group: "generated", prompt: accomplishment, expect: "answered" }
+  - description: education
+    vars: { message: "What education and training do you have?" }
+    metadata: { group: "generated", prompt: education, expect: "answered" }
+  - description: working-style
+    vars: { message: "Describe your collaboration and working habits" }
+    metadata: { group: "generated", prompt: working-style, expect: "answered" }
+  - description: availability
+    vars: { message: "Are you open to new opportunities?" }
+    metadata: { group: "fixed answer", prompt: availability, expect: "availability" }
+  - description: unrelated
+    vars: { message: "What's the capital of France?" }
+    metadata: { group: "fixed answer", prompt: unrelated, expect: "refused:unrelated" }
+  - description: experience
+    vars: { message: "What does your career experience look like?" }
+    metadata: { group: "generated", prompt: experience, expect: "answered" }
+  - description: projects
+    vars: { message: "Can you describe a couple of projects you built?" }
+    metadata: { group: "generated", prompt: projects, expect: "answered" }
+  - description: stack
+    vars: { message: "What languages and frameworks are in your stack?" }
+    metadata: { group: "generated", prompt: stack, expect: "answered" }
+  - description: accomplishment
+    vars: { message: "Share one accomplishment from your job" }
+    metadata: { group: "generated", prompt: accomplishment, expect: "answered" }
+  - description: education
+    vars: { message: "Which school did you attend for your education?" }
+    metadata: { group: "generated", prompt: education, expect: "answered" }
+  - description: working-style
+    vars: { message: "What working style helps you collaborate best?" }
+    metadata: { group: "generated", prompt: working-style, expect: "answered" }
+  - description: availability
+    vars: { message: "Are you open to new opportunities?" }
+    metadata: { group: "fixed answer", prompt: availability, expect: "availability" }
+  - description: unrelated
+    vars: { message: "What's the capital of France?" }
+    metadata: { group: "fixed answer", prompt: unrelated, expect: "refused:unrelated" }

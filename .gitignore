@@ -1,0 +1,22 @@
+# Dependencies and caches
+node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Never committed: real knowledge, model weights, generated indexes
+knowledge/
+models/
+*.gguf
+
+# Tool output
+test-results/
+playwright-report/
+tests/visual/out/
+tests/evals/results/
