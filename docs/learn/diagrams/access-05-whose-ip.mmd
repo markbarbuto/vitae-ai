@@ -1,0 +1,7 @@
+flowchart LR
+  Visitor["Visitor<br/>203.0.113.7"] -->|"may send a fake<br/>X-Forwarded-For"| Proxy["Reverse proxy<br/>172.30.0.2"]
+  Proxy -->|"overwrites X-Real-IP: 203.0.113.7"| API["Backend"]
+  Trust[("VITAE_TRUSTED_PROXY_CIDRS<br/>172.30.0.0/24")] --> API
+  API --> Rule{"TCP peer inside<br/>a trusted range?"}
+  Rule -->|"yes"| UseHeader["client IP = X-Real-IP"]
+  Rule -->|"no"| UsePeer["client IP = TCP peer,<br/>headers ignored"]

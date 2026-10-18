@@ -1,0 +1,26 @@
+event: session
+data: {"type":"session","session_id":"c2Vzc2lvbi1leGFtcGxlMQ","turns_left":19}
+
+event: queued
+data: {"type":"queued","position":2}
+
+event: queued
+data: {"type":"queued","position":1}
+
+: keep-alive
+
+event: started
+data: {"type":"started"}
+
+event: text
+data: {"type":"text","text":"I built Shift Notes, a handoff tool for support teams. "}
+
+event: text
+data: {"type":"text","text":"I also built Neighbourhood Signals, which maps local service requests."}
+
+event: sources
+data: {"type":"sources","sources":[{"id":"projects","title":"Projects","href":null}]}
+
+event: done
+data: {"type":"done","finish":"complete"}
+

@@ -1,0 +1,6 @@
+flowchart LR
+  Page["Browser page"] -->|"Origin set by the browser,<br/>page code cannot change it"| Check{"Allowlist"}
+  Script["curl or a script"] -->|"Origin typed by hand,<br/>can claim anything"| Check
+  Check --> Limit{"Per-IP rate limit<br/>+ queue size"}
+  Limit -->|"under the limit"| Work["Answer"]
+  Limit -->|"over"| R429["429 rate_limited<br/>or 503 busy"]

@@ -1,0 +1,6 @@
+event: session
+data: {"type":"session","session_id":"c2Vzc2lvbi1leGFtcGxlMQ","turns_left":19}
+
+event: refused
+data: {"type":"refused","reason":"pii","message":"Please don't share personal details like email addresses or phone numbers here."}
+

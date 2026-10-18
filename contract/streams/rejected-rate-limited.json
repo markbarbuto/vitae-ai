@@ -1,0 +1,1 @@
+{"error":{"code":"rate_limited","retry_after_s":42,"detail":"6 requests per minute per IP"}}

@@ -1,0 +1,9 @@
+event: session
+data: {"type":"session","session_id":"c2Vzc2lvbi1leGFtcGxlMQ","turns_left":19}
+
+event: started
+data: {"type":"started"}
+
+event: text
+data: {"type":"text","text":
+

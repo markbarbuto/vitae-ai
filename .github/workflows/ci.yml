@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  contract:
+    name: Contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+          enable-cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the backend
+        working-directory: backend
+        run: uv sync --locked --python 3.12
+
+      - name: Test the backend
+        working-directory: backend
+        run: uv run --locked pytest
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Regenerate the contract
+        run: npm run contract
+
+      - name: Fail if the committed contract is stale
+        run: git add --intent-to-add contract/ && git diff --exit-code -- contract/

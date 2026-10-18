@@ -1,5 +1,6 @@
 # Black-box evals: each case sends a message to a running backend over HTTP and
 # grades what a visitor would see. Run with `npm run evals` from the repo root.
+# The provider runs on backend/.venv: the npm script sets PROMPTFOO_PYTHON through backend/venv.mjs.
 description: Vitae guard and answer evals
 
 prompts:

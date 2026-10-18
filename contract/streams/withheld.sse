@@ -1,0 +1,12 @@
+event: session
+data: {"type":"session","session_id":"c2Vzc2lvbi1leGFtcGxlMQ","turns_left":18}
+
+event: started
+data: {"type":"started"}
+
+event: text
+data: {"type":"text","text":"My main projects are Shift Notes and Neighbourhood Signals. "}
+
+event: done
+data: {"type":"done","finish":"withheld"}
+

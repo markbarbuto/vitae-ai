@@ -16,6 +16,8 @@ Each owner runs their own backend for their own site, so the backend only needs 
 
 ![Step 2: the backend checks who is calling](images/sd-02-the-backend-checks-who-is-calling.png)
 
+A request that fails one of these checks gets a real HTTP error before any answer starts: 403, 413, 429 or 503. A request that passes gets `200` and a stream of events. `02-access.md` explains the origin check, CORS, the client IP and the stream format in detail.
+
 ## Step 3: the question passes through input guards
 
 Each guard either lets the question through or turns it into a polite refusal. The order matters. Cheap checks run first so the expensive model check only sees questions that survived.

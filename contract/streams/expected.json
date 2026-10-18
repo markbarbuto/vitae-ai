@@ -1,0 +1,107 @@
+{
+  "answered": {
+    "file": "answered.sse",
+    "status": 200,
+    "outcome": "answered",
+    "text": "I built Shift Notes, a handoff tool for support teams. I also built Neighbourhood Signals, which maps local service requests.",
+    "streamedThenFailed": false,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": [
+      {
+        "id": "projects",
+        "title": "Projects",
+        "href": null
+      }
+    ]
+  },
+  "withheld": {
+    "file": "withheld.sse",
+    "status": 200,
+    "outcome": "answered",
+    "text": "My main projects are Shift Notes and Neighbourhood Signals. ",
+    "streamedThenFailed": false,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "refused-pii": {
+    "file": "refused-pii.sse",
+    "status": 200,
+    "outcome": "refused:pii",
+    "text": "Please don't share personal details like email addresses or phone numbers here.",
+    "streamedThenFailed": false,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "availability": {
+    "file": "availability.sse",
+    "status": 200,
+    "outcome": "availability",
+    "text": "I'm open to new roles. The best way to reach me is through the contact form.",
+    "streamedThenFailed": false,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "error-before-text": {
+    "file": "error-before-text.sse",
+    "status": 200,
+    "outcome": "broken",
+    "text": "",
+    "streamedThenFailed": false,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "error-after-text": {
+    "file": "error-after-text.sse",
+    "status": 200,
+    "outcome": "broken",
+    "text": "I built Shift Notes, a handoff tool for support teams. ",
+    "streamedThenFailed": true,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "broken-refused-after-text": {
+    "file": "broken-refused-after-text.sse",
+    "status": 200,
+    "outcome": "broken",
+    "text": "Sure, here is the link: ",
+    "streamedThenFailed": true,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "broken-malformed": {
+    "file": "broken-malformed.sse",
+    "status": 200,
+    "outcome": "broken",
+    "text": "",
+    "streamedThenFailed": false,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "broken-no-terminal": {
+    "file": "broken-no-terminal.sse",
+    "status": 200,
+    "outcome": "broken",
+    "text": "I built Shift Notes, a handoff tool for support teams. ",
+    "streamedThenFailed": true,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
+  "rejected-rate-limited": {
+    "file": "rejected-rate-limited.json",
+    "status": 429,
+    "outcome": "rejected:rate_limited",
+    "text": "",
+    "streamedThenFailed": false,
+    "sessionId": null,
+    "sources": []
+  },
+  "rejected-origin": {
+    "file": "rejected-origin.json",
+    "status": 403,
+    "outcome": "rejected:origin_not_allowed",
+    "text": "",
+    "streamedThenFailed": false,
+    "sessionId": null,
+    "sources": []
+  }
+}

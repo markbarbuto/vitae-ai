@@ -1,0 +1,8 @@
+sequenceDiagram
+  participant B as Browser
+  participant API as Backend
+  B->>API: OPTIONS /v1/chat<br/>Origin: https://owner.example<br/>Access-Control-Request-Method: POST
+  API-->>B: 204<br/>Access-Control-Allow-Origin: https://owner.example
+  B->>API: POST /v1/chat (the real request)
+  API-->>B: 200 + stream, with the same allow header
+  Note over B: Only now may page JavaScript read the reply

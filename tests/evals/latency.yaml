@@ -2,6 +2,7 @@
 # different string, so the model server's prompt cache can reuse only the
 # shared system prompt, as it can for real visitors. The first two warm the
 # server up and are left out of the report.
+# The provider runs on backend/.venv: the npm script sets PROMPTFOO_PYTHON through backend/venv.mjs.
 description: Vitae latency probe
 
 prompts:

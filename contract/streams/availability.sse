@@ -1,0 +1,9 @@
+event: session
+data: {"type":"session","session_id":"c2Vzc2lvbi1leGFtcGxlMQ","turns_left":19}
+
+event: started
+data: {"type":"started"}
+
+event: availability
+data: {"type":"availability","message":"I'm open to new roles. The best way to reach me is through the contact form.","action":{"id":"contact","label":"Get in touch","href":"#contact"}}
+

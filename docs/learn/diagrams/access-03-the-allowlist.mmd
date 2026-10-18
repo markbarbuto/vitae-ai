@@ -1,0 +1,5 @@
+flowchart LR
+  Req["Request"] --> Check{"Origin header is an exact<br/>entry in VITAE_ALLOWED_ORIGINS?"}
+  Check -->|"yes"| Work["Handle it, and send<br/>Access-Control-Allow-Origin"]
+  Check -->|"no, or missing"| Reject["403 origin_not_allowed<br/>no allow header, no work done"]
+  Env[("VITAE_ALLOWED_ORIGINS<br/>https://owner.example")] --> Check

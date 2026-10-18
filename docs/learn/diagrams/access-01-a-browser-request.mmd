@@ -1,0 +1,3 @@
+flowchart LR
+  Page["Page on https://owner.example<br/>runs the chat component"] -->|"POST /v1/chat<br/>Origin: https://owner.example"| API["Backend"]
+  API -->|"200, then a stream of events"| Page

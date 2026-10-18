@@ -1,0 +1,21 @@
+[project]
+name = "vitae"
+version = "0.1.0"
+description = "Self-hosted guarded chat engine: the HTTP and SSE contract, settings and, from phase 2, the API."
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.9,<3",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+]

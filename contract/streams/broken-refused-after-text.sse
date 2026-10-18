@@ -1,0 +1,9 @@
+event: session
+data: {"type":"session","session_id":"c2Vzc2lvbi1leGFtcGxlMQ","turns_left":19}
+
+event: text
+data: {"type":"text","text":"Sure, here is the link: "}
+
+event: refused
+data: {"type":"refused","reason":"output_rule","message":"I can't share that."}
+

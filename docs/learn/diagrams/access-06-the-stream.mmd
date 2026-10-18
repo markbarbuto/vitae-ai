@@ -1,0 +1,12 @@
+sequenceDiagram
+  participant B as Browser
+  participant API as Backend
+  B->>API: POST /v1/chat {"message": "What projects have you built?"}
+  API-->>B: 200 text/event-stream
+  API-->>B: event: session (id kept in memory)
+  API-->>B: event: queued (position 1)
+  API-->>B: event: started
+  API-->>B: event: text (first checked sentence)
+  API-->>B: event: text (second checked sentence)
+  API-->>B: event: sources
+  API-->>B: event: done (complete)
