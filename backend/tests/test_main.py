@@ -34,11 +34,16 @@ def start_main(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def stderr_of(result: subprocess.CompletedProcess[str]) -> str:
+    """stderr without onnxruntime's own log lines, which it prints on import on some Linux hosts."""
+    return "".join(line for line in result.stderr.splitlines(keepends=True) if "onnxruntime" not in line)
+
+
 def test_main_refuses_to_start_without_the_model_file(tmp_path: Path):
     result = start_main({**BASE_ENV, "VITAE_INJECTION_MODEL_DIR": str(tmp_path)})
     assert result.returncode == 1
     first = CASCADE[0]
-    assert result.stderr.strip() == (
+    assert stderr_of(result).strip() == (
         f"No injection model at {tmp_path / first['dir'] / first['onnx']}. "
         "Set VITAE_INJECTION_MODEL_DIR or run `python -m bench.fetch`."
     )
@@ -47,7 +52,7 @@ def test_main_refuses_to_start_without_the_model_file(tmp_path: Path):
 def test_main_refuses_to_start_on_bad_settings_and_lists_every_problem():
     result = start_main({"VITAE_RATE_LIMITS": "ten/minute"})
     assert result.returncode == 1
-    assert result.stderr.splitlines()[:3] == [
+    assert stderr_of(result).splitlines()[:3] == [
         "Invalid configuration (2 problems):",
         "  VITAE_ALLOWED_ORIGINS: required.",
         '  VITAE_RATE_LIMITS: "ten/minute" is not count/unit with count >= 1 and unit second, minute, hour or day.',
@@ -59,7 +64,7 @@ def test_main_refuses_to_start_on_a_bad_profile(tmp_path: Path):
     profile.write_text("[assistant]\n", encoding="utf-8")
     result = start_main({**BASE_ENV, "VITAE_PROFILE": str(profile)})
     assert result.returncode == 1
-    assert result.stderr.startswith("Invalid profile (")
+    assert stderr_of(result).startswith("Invalid profile (")
 
 
 def test_dev_serves_the_scripted_answer_through_the_real_guards(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
