@@ -168,9 +168,14 @@ def test_the_cascade_decides_exactly_as_the_full_mean(
     assert cascade.mean(turn) == (first + second) / 2
 
 
-SHA = "ab" * 32
-FIRST = {"id": "x/model.onnx", "dir": "x", "onnx": "model.onnx", "repo": "x", "sha256": SHA}
-SECOND = {"id": "y/onnx/model.onnx", "dir": "y", "onnx": "onnx/model.onnx", "repo": "y", "sha256": "cd" * 32}
+def digests(onnx: str, digit: str) -> dict[str, str]:
+    return {name: digit * 64 for name in (onnx, "config.json", "special_tokens_map.json", "tokenizer.json")}
+
+
+FIRST_SHA = digests("model.onnx", "a")
+SECOND_SHA = digests("onnx/model.onnx", "c")
+FIRST = {"id": "x/model.onnx", "dir": "x", "onnx": "model.onnx", "repo": "x", "sha256": FIRST_SHA}
+SECOND = {"id": "y/onnx/model.onnx", "dir": "y", "onnx": "onnx/model.onnx", "repo": "y", "sha256": SECOND_SHA}
 
 
 def test_calibration_reads_the_threshold_the_flag_and_both_models_it_was_measured_on(tmp_path: Path):
@@ -179,7 +184,7 @@ def test_calibration_reads_the_threshold_the_flag_and_both_models_it_was_measure
     assert Calibration.load(path) == Calibration(
         injection_threshold=0.0625,
         calibrated=True,
-        cascade=(ModelFile("x", "model.onnx", SHA), ModelFile("y", "onnx/model.onnx", "cd" * 32)),
+        cascade=(ModelFile("x", "model.onnx", FIRST_SHA), ModelFile("y", "onnx/model.onnx", SECOND_SHA)),
     )
 
 
@@ -195,15 +200,41 @@ def test_calibration_reads_the_threshold_the_flag_and_both_models_it_was_measure
         {"calibrated": True, "injection_threshold": 0.5, "cascade": [FIRST]},
         {"calibrated": True, "injection_threshold": 0.5, "cascade": [FIRST, SECOND, SECOND]},
         {"calibrated": True, "injection_threshold": 0.5, "model": FIRST},
-        {"calibrated": True, "injection_threshold": 0.5, "cascade": [FIRST, {**SECOND, "sha256": "AB" * 32}]},
+        {"calibrated": True, "injection_threshold": 0.5, "cascade": [FIRST, {**SECOND, "sha256": "cd" * 32}]},
+        {
+            "calibrated": True,
+            "injection_threshold": 0.5,
+            "cascade": [FIRST, {**SECOND, "sha256": {**SECOND_SHA, "tokenizer.json": "AB" * 32}}],
+        },
+        {
+            "calibrated": True,
+            "injection_threshold": 0.5,
+            "cascade": [FIRST, {**SECOND, "sha256": {**SECOND_SHA, "tokenizer.json": 7}}],
+        },
+        {
+            "calibrated": True,
+            "injection_threshold": 0.5,
+            "cascade": [{**FIRST, "sha256": {k: v for k, v in FIRST_SHA.items() if k != "config.json"}}, SECOND],
+        },
+        {
+            "calibrated": True,
+            "injection_threshold": 0.5,
+            "cascade": [{**FIRST, "sha256": {**FIRST_SHA, "tokenizer_config.json": "a" * 64}}, SECOND],
+        },
+        {"calibrated": True, "injection_threshold": 0.5, "cascade": [{**FIRST, "onnx": "other.onnx"}, SECOND]},
         {"calibrated": True, "injection_threshold": 0.5, "cascade": [{**FIRST, "onnx": None}, SECOND]},
     ],
 )
 def test_calibration_rejects_a_malformed_file(tmp_path: Path, raw: dict[str, object]):
     path = tmp_path / "calibration.json"
     path.write_text(json.dumps(raw))
-    with pytest.raises(ValueError, match="needs injection_threshold, a number from 0 to 1, calibrated"):
+    with pytest.raises(ValueError) as raised:
         Calibration.load(path)
+    assert str(raised.value).startswith(
+        f"{path}: needs injection_threshold, a number from 0 to 1, calibrated, true or false, and cascade, two "
+        "models each with dir, onnx and sha256, an object mapping the onnx file and config.json, "
+        "special_tokens_map.json, tokenizer.json to its lowercase hex sha256. Got {"
+    )
 
 
 def test_the_committed_calibration_names_prompt_guard_fp32_then_horizon_int8():
@@ -213,12 +244,22 @@ def test_the_committed_calibration_names_prompt_guard_fp32_then_horizon_int8():
         ModelFile(
             "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
             "model.onnx",
-            "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf",
+            {
+                "model.onnx": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf",
+                "config.json": "db1a6dabb734766632a009e17fa72ac4d110505f4be0651654dafc30002461cc",
+                "special_tokens_map.json": "b2f1b2f15f29a6b6d9d6ea4eca1675d2c231a71477f151d48f79cc83a625ba21",
+                "tokenizer.json": "92c8b45d0b12ae0dd9680fbfe9804503542c377d65838558cd0b48a795385dde",
+            },
         ),
         ModelFile(
             "Horizon-Labs/prompt-injection-guard-small",
             "onnx/model_quantized.onnx",
-            "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d",
+            {
+                "onnx/model_quantized.onnx": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d",
+                "config.json": "d6264037c9aa4b3d821c1c9a0329572033adbdb622788ecca91c3636066d9622",
+                "special_tokens_map.json": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351",
+                "tokenizer.json": "47834a7dbbb0c4324fe9569fe47955241594a9ee539c9e478755d6fbc51e5f46",
+            },
         ),
     )
 
@@ -345,18 +386,38 @@ def test_a_rot13_attack_behind_a_plain_request_is_read_back_for_the_classifier()
 
 
 def test_model_problem_accepts_only_the_exact_files_the_threshold_was_calibrated_on(tmp_path: Path) -> None:
-    for name, weights in (("first", b"first weights"), ("second", b"second weights")):
+    contents = {
+        "model.onnx": b"weights",
+        "config.json": b"{}",
+        "special_tokens_map.json": b"{ }",
+        "tokenizer.json": b"[]",
+    }
+    for name in ("first", "second"):
         (tmp_path / name).mkdir()
-        (tmp_path / name / "model.onnx").write_bytes(weights)
-    first = ModelFile("first", "model.onnx", hashlib.sha256(b"first weights").hexdigest())
-    second = ModelFile("second", "model.onnx", hashlib.sha256(b"second weights").hexdigest())
+        for file, data in contents.items():
+            (tmp_path / name / file).write_bytes(name.encode() + data)
+    first, second = (
+        ModelFile(
+            name,
+            "model.onnx",
+            {file: hashlib.sha256(name.encode() + data).hexdigest() for file, data in contents.items()},
+        )
+        for name in ("first", "second")
+    )
     calibration = Calibration(0.6, True, (first, second))
-
     assert calibration.model_problem(tmp_path) is None
-    (tmp_path / "second" / "model.onnx").write_bytes(b"other weights")
+
+    for file in ("model.onnx", "config.json", "special_tokens_map.json", "tokenizer.json"):
+        path = tmp_path / "second" / file
+        path.write_bytes(b"changed")
+        assert calibration.model_problem(tmp_path) == (
+            f"{path} is not the file {CALIBRATION_PATH} was calibrated on (sha256 {second.sha256[file]})."
+        )
+        path.write_bytes(b"second" + contents[file])
+    (tmp_path / "first" / "tokenizer.json").unlink()
     assert calibration.model_problem(tmp_path) == (
-        f"{tmp_path / 'second' / 'model.onnx'} is not the model {CALIBRATION_PATH} was calibrated on "
-        f"(sha256 {second.sha256})."
+        f"No injection model at {tmp_path / 'first' / 'tokenizer.json'}. "
+        "Set VITAE_INJECTION_MODEL_DIR or run `python -m bench.fetch`."
     )
     assert calibration.model_problem(tmp_path / "missing") == (
         f"No injection model at {tmp_path / 'missing' / 'first' / 'model.onnx'}. "

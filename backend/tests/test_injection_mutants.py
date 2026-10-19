@@ -159,7 +159,7 @@ def test_the_cascade_loads_each_model_from_its_own_directory_and_file(tmp_path: 
     model_dir(tmp_path / "first")
     model_dir(tmp_path / "second", id2label={"0": "INJECTION", "1": "benign"}, onnx_file="onnx/model.onnx")
     calibration = Calibration(
-        0.5, True, (ModelFile("first", "model.onnx", "ab" * 32), ModelFile("second", "onnx/model.onnx", "cd" * 32))
+        0.5, True, (ModelFile("first", "model.onnx", {}), ModelFile("second", "onnx/model.onnx", {}))
     )
     cascade = CascadeClassifier.load(tmp_path, calibration)
     assert cascade.first.score("c") == pytest.approx(0.9975274, abs=1e-6)
@@ -168,7 +168,8 @@ def test_the_cascade_loads_each_model_from_its_own_directory_and_file(tmp_path: 
 
 @pytest.mark.parametrize("threshold", [0.0, 1.0])
 def test_calibration_accepts_both_ends_of_the_threshold_range(tmp_path: Path, threshold: float):
-    model = {"dir": "x", "onnx": "model.onnx", "sha256": "ab" * 32}
+    digests = {name: "ab" * 32 for name in ("model.onnx", "config.json", "special_tokens_map.json", "tokenizer.json")}
+    model = {"dir": "x", "onnx": "model.onnx", "sha256": digests}
     path = tmp_path / "calibration.json"
     path.write_text(json.dumps({"injection_threshold": threshold, "calibrated": True, "cascade": [model, model]}))
     assert Calibration.load(path).injection_threshold == threshold

@@ -17,12 +17,16 @@ Every decision comes from `screen(normalize(text), stages)`, the function the en
 `build_input_stages(...).for_reason("injection")`, the engine's own stages, with the shipped
 CascadeClassifier. Classifier scores are memoized per input text under .cache/bench, so a rerun skips
 the forward pass and nothing else.
+
+A held-out run is recorded in the committed bench/heldout-runs.jsonl. While it holds a guards run,
+another needs --rerun, whatever bench/frozen.json now says.
 """
 
 import argparse
 import base64
 import codecs
 import hashlib
+import inspect
 import json
 import math
 import random
@@ -32,6 +36,7 @@ import tomllib
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from importlib.metadata import version
 from pathlib import Path
 from time import perf_counter
 from typing import Final, cast
@@ -42,6 +47,7 @@ from vitae.guards import InputStages, Refuse, build_input_stages
 from vitae.guards import injection as injection_module
 from vitae.guards.injection import (
     CALIBRATION_PATH,
+    SIDE_FILES,
     WINDOW_STRIDE,
     WINDOW_TOKENS,
     Calibration,
@@ -62,7 +68,8 @@ from vitae.text import Turn, normalize
 BENCH_CACHE: Final = CACHE / "bench"
 MODELS_DIR: Final = CACHE / "models"
 """VITAE_INJECTION_MODEL_DIR on a development machine: bench.fetch puts each model at <repo>/ here."""
-RUN_LOG: Final = BENCH_CACHE / "heldout-runs.jsonl"
+RUN_LOG: Final = Path(__file__).with_name("heldout-runs.jsonl")
+"""Committed and append-only: one JSON object per held-out run of bench.guards or bench.pii."""
 FROZEN: Final = Path(__file__).with_name("frozen.json")
 THRESHOLDS: Final = Path(__file__).with_name("thresholds.toml")
 TARGET_FPR: Final = 0.01
@@ -107,11 +114,16 @@ class Model:
         repo, onnx = found.pop()
         return cls(onnx_path.resolve().parents[len(Path(onnx).parts) - 1], onnx, repo, sha)
 
-    def file(self) -> ModelFile:
-        return ModelFile(self.dir.relative_to(MODELS_DIR.resolve()).as_posix(), self.onnx, self.sha256)
+    def file_hashes(self) -> dict[str, str]:
+        """sha256 of every file the loader reads, by its path inside dir."""
+        return {self.onnx: self.sha256, **{name: sha256_of(self.dir / name) for name in SIDE_FILES}}
 
-    def as_json(self) -> dict[str, str]:
-        return {"id": self.id, "dir": self.file().dir, "onnx": self.onnx, "repo": self.repo, "sha256": self.sha256}
+    def file(self) -> ModelFile:
+        return ModelFile(self.dir.relative_to(MODELS_DIR.resolve()).as_posix(), self.onnx, self.file_hashes())
+
+    def as_json(self) -> dict[str, object]:
+        file = self.file()
+        return {"id": self.id, "dir": file.dir, "onnx": self.onnx, "repo": self.repo, "sha256": dict(file.sha256)}
 
 
 @dataclass(frozen=True, slots=True)
@@ -146,27 +158,49 @@ class Calibrated:
         raw = _load_json(path)
         if raw.get("calibrated") is not True:
             raise SystemExit(f"{path} is uncalibrated. Run `python -m bench.guards calibrate --split dev` first.")
-        first, second = (_recorded(model, path) for model in cast(list[dict[str, str]], raw["cascade"]))
+        first, second = (_recorded(model, path) for model in cast(list[dict[str, object]], raw["cascade"]))
         alone = cast(dict[str, float], raw["first_alone"])["injection_threshold"]
         return cls(Cascade(first, second), float(cast(float, raw["injection_threshold"])), float(alone))
 
 
-def _recorded(recorded: dict[str, str], calibration: Path) -> Model:
-    model = Model.resolve(MODELS_DIR / recorded["dir"] / recorded["onnx"])
-    if model.sha256 != recorded["sha256"]:
-        raise SystemExit(f"{model.dir / model.onnx} no longer matches the sha256 in {calibration}")
+def _recorded(recorded: dict[str, object], calibration: Path) -> Model:
+    model = Model.resolve(MODELS_DIR / str(recorded["dir"]) / str(recorded["onnx"]))
+    live = model.file_hashes()
+    pinned = cast(dict[str, str], recorded["sha256"])
+    if changed := sorted(name for name in live.keys() | pinned.keys() if live.get(name) != pinned.get(name)):
+        raise SystemExit(f"{model.dir}: {', '.join(changed)} no longer match the sha256 in {calibration}")
     return model
 
 
+def score_identity(model: Model) -> dict[str, object]:
+    """Everything a memoized score depends on besides the text: every file the loader reads, the window
+    shape, the packages that tokenize, run the model and take the softmax, and the source of the code
+    that scores."""
+    return {
+        "files": model.file_hashes(),
+        "window": [WINDOW_TOKENS, WINDOW_STRIDE],
+        "packages": {name: version(name) for name in ("tokenizers", "onnxruntime", "numpy")},
+        "code": hashlib.sha256(
+            "".join(inspect.getsource(code) for code in injection_module.WINDOW_SCORE_CODE).encode("utf-8")
+        ).hexdigest(),
+    }
+
+
+def score_cache(model: Model) -> Path:
+    identity = json.dumps(score_identity(model), sort_keys=True).encode("utf-8")
+    return BENCH_CACHE / "scores" / f"{hashlib.sha256(identity).hexdigest()}.json"
+
+
 class MemoClassifier:
-    """The ONNX classifier with its scores memoized by input text, saved per model file and window shape.
-    The model is loaded on the first text missing from the memo."""
+    """The ONNX classifier with its scores memoized by input text, saved under score_cache(model), so a
+    change to anything a score depends on starts a fresh memo. The model is loaded on the first text
+    missing from the memo."""
 
     def __init__(self, model: Model, threads: int) -> None:
         self._model = model
         self._threads = threads
         self._inner: OnnxInjectionClassifier | None = None
-        self._path = BENCH_CACHE / "scores" / f"{model.sha256[:16]}-w{WINDOW_TOKENS}s{WINDOW_STRIDE}.json"
+        self._path = score_cache(model)
         self._scores: dict[str, float] = (
             cast(dict[str, float], json.loads(self._path.read_bytes())) if self._path.is_file() else {}
         )
@@ -511,11 +545,12 @@ def freeze(calibrated: Calibrated) -> tuple[str, str]:
         "paths": {name: path.resolve().relative_to(REPO_ROOT).as_posix() for name, path in FROZEN_FILES.items()},
     }
     FROZEN.write_text(json.dumps(frozen, indent=2) + "\n", encoding="utf-8")
-    return sha256_of(FROZEN), frozen_at
+    return source_sha256(FROZEN), frozen_at
 
 
 def heldout_guard(cascade: Cascade, *, rerun: bool, run_log: Path = RUN_LOG, frozen_path: Path = FROZEN) -> str:
-    """The frozen hash when the live files match bench/frozen.json and the run is allowed. Exits otherwise."""
+    """The frozen hash when the live files match bench/frozen.json and the run is allowed: the first
+    guards run in run_log, or any run with --rerun. A re-freeze does not reopen the held-out split."""
     if not frozen_path.is_file():
         raise SystemExit(f"{frozen_path} does not exist. Run `python -m bench.guards freeze` first.")
     frozen = cast(dict[str, str], _load_json(frozen_path)["sha256"])
@@ -523,43 +558,57 @@ def heldout_guard(cascade: Cascade, *, rerun: bool, run_log: Path = RUN_LOG, fro
     changed = sorted(name for name in frozen.keys() | live.keys() if frozen.get(name) != live.get(name))
     if changed:
         raise SystemExit(f"refusing the held-out run: {', '.join(changed)} changed since {frozen_path.name}")
-    frozen_hash = sha256_of(frozen_path)
-    previous = [
-        line
-        for line in (run_log.read_text(encoding="utf-8").splitlines() if run_log.is_file() else [])
-        if json.loads(line).get("frozen") == frozen_hash
-    ]
+    previous = heldout_runs("guards", run_log)
     if previous and not rerun:
-        raise SystemExit(f"held-out already run {len(previous)} time(s) for frozen {frozen_hash}. Pass --rerun.")
-    return frozen_hash
+        raise SystemExit(
+            f"held-out already run {len(previous)} time(s), first for frozen {previous[0]['frozen']}. Pass --rerun."
+        )
+    return source_sha256(frozen_path)
 
 
-def _log_run(entry: dict[str, object]) -> None:
-    RUN_LOG.parent.mkdir(parents=True, exist_ok=True)
-    with RUN_LOG.open("a", encoding="utf-8") as log:
+def heldout_runs(tool: str, run_log: Path = RUN_LOG) -> list[dict[str, object]]:
+    lines = run_log.read_text(encoding="utf-8").splitlines() if run_log.is_file() else []
+    runs = [cast(dict[str, object], json.loads(line)) for line in lines if line.strip()]
+    return [run for run in runs if run["tool"] == tool]
+
+
+def log_heldout_run(tool: str, frozen: str, *, rerun: bool, summary: str, run_log: Path = RUN_LOG) -> None:
+    entry = {
+        "tool": tool,
+        "frozen": frozen,
+        "at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "rerun": rerun,
+        "summary": summary,
+    }
+    with run_log.open("a", encoding="utf-8", newline="\n") as log:
         log.write(json.dumps(entry) + "\n")
+
+
+def heldout_summary(common_ground: Sequence[PoolReport], first_alone: Sequence[PoolReport]) -> str:
+    recall, fpr = _pooled(common_ground, "t1_gate")
+    alone_recall, alone_fpr = _pooled(first_alone, "t1_gate")
+    return (
+        f"cascade, common ground, t1_gate: recall {recall}, FPR {fpr}. "
+        f"First model alone, every corpus, t1_gate: recall {alone_recall}, FPR {alone_fpr}."
+    )
 
 
 def score_heldout(calibrated: Calibrated, threads: int, *, rerun: bool) -> list[str]:
     """ADR 0002: the cascade on the corpora neither model trained on, the first model alone on every corpus."""
     cascade = calibrated.cascade
     frozen_hash = heldout_guard(cascade, rerun=rerun)
-    started = datetime.now(UTC).isoformat(timespec="seconds")
-    _log_run({"frozen": frozen_hash, "event": "started", "at": started, "rerun": rerun})
     memo = Memo(cascade, threads)
     decisions = _decide(calibrated, memo, Turns(), "heldout")
-    lines = [
+    common = score_pools(decisions.common_ground, decisions.cascade)
+    alone = score_pools(decisions.samples, decisions.first_alone)
+    log_heldout_run("guards", frozen_hash, rerun=rerun, summary=heldout_summary(common, alone))
+    return [
         f"## Cascade {cascade.id}, held-out split (frozen {frozen_hash})",
-        *_pool_tables(
-            score_pools(decisions.common_ground, decisions.cascade),
-            f"Common ground (excluded: {', '.join(cascade.trained_on)})",
-        ),
+        *_pool_tables(common, f"Common ground (excluded: {', '.join(cascade.trained_on)})"),
         "",
         f"## {cascade.first.id} alone, held-out split",
-        *_pool_tables(score_pools(decisions.samples, decisions.first_alone), "Every corpus"),
+        *_pool_tables(alone, "Every corpus"),
     ]
-    _log_run({"frozen": frozen_hash, "event": "result", "at": started, "rerun": rerun, "report": lines})
-    return lines
 
 
 def check(calibrated: Calibrated, threads: int, thresholds: Path = THRESHOLDS) -> list[str]:
@@ -781,7 +830,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     score = command("score")
     score.add_argument("--split", choices=["dev", "heldout"], required=True)
-    score.add_argument("--rerun", action="store_true", help="allow a second held-out run for the same freeze")
+    score.add_argument("--rerun", action="store_true", help="allow another held-out run after the first")
     score.add_argument("--no-loco", action="store_true")
     command("freeze")
     command("check")

@@ -5,35 +5,45 @@
       "id": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx/model.onnx",
       "onnx": "model.onnx",
       "repo": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
-      "sha256": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf"
+      "sha256": {
+        "config.json": "db1a6dabb734766632a009e17fa72ac4d110505f4be0651654dafc30002461cc",
+        "model.onnx": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf",
+        "special_tokens_map.json": "b2f1b2f15f29a6b6d9d6ea4eca1675d2c231a71477f151d48f79cc83a625ba21",
+        "tokenizer.json": "92c8b45d0b12ae0dd9680fbfe9804503542c377d65838558cd0b48a795385dde"
+      }
     },
     {
       "dir": "Horizon-Labs/prompt-injection-guard-small",
       "id": "Horizon-Labs/prompt-injection-guard-small/onnx/model_quantized.onnx",
       "onnx": "onnx/model_quantized.onnx",
       "repo": "Horizon-Labs/prompt-injection-guard-small",
-      "sha256": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d"
+      "sha256": {
+        "config.json": "d6264037c9aa4b3d821c1c9a0329572033adbdb622788ecca91c3636066d9622",
+        "onnx/model_quantized.onnx": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d",
+        "special_tokens_map.json": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351",
+        "tokenizer.json": "47834a7dbbb0c4324fe9569fe47955241594a9ee539c9e478755d6fbc51e5f46"
+      }
     }
   ],
-  "frozen_at": "2026-10-19T17:34:07+00:00",
+  "frozen_at": "2026-10-19T22:24:30+00:00",
   "paths": {
     "calibration": "backend/src/vitae/guards/calibration.json",
     "normalize": "backend/src/vitae/text.py",
     "rules": "backend/src/vitae/guards/injection.py"
   },
   "pii": {
-    "at": "2026-10-19T17:34:08Z",
+    "at": "2026-10-19T22:24:32Z",
     "files": {
-      "bench/pii.py": "dc9628dfcc0d951bed2b0ba6147a9f610b2108c151502aa186fa8d3f9a8d0522",
+      "bench/pii.py": "b14cf5d8585b26915fba8a85380fc9016c2ca5eb8fb58eb60a36540b6eacb3d2",
       "src/vitae/guards/pii.py": "8822b1374a11e408fe4c99f1642e26096a54f95fedbaf30a6cb43820a4558df4",
       "src/vitae/text.py": "0e2c439e298679b555145eda996421dfea489a8489551969f241263bb19caa9c"
     }
   },
   "sha256": {
-    "calibration": "593ee89736f9b2e3203d4cdd19aac416d79863edaae3f9bb7d28dc2ebc829e75",
+    "calibration": "c79a889334551dc048bf9d834cf59ae48474c679eebc269e3facd1b151a6d092",
     "first_model": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf",
     "normalize": "0e2c439e298679b555145eda996421dfea489a8489551969f241263bb19caa9c",
-    "rules": "32ec112e7feed6eeeb3f5fda5980e2c73abb512b38bd0f359fa823d8b1aa93c9",
+    "rules": "5b294ba3c5d7143e9a4b6ec091b8e25be9d19078764ebd5e2cde75cf558e7d8a",
     "second_model": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d"
   }
 }

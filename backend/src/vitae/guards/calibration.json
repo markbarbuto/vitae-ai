@@ -7,14 +7,24 @@
       "dir": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
       "onnx": "model.onnx",
       "repo": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
-      "sha256": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf"
+      "sha256": {
+        "model.onnx": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf",
+        "config.json": "db1a6dabb734766632a009e17fa72ac4d110505f4be0651654dafc30002461cc",
+        "special_tokens_map.json": "b2f1b2f15f29a6b6d9d6ea4eca1675d2c231a71477f151d48f79cc83a625ba21",
+        "tokenizer.json": "92c8b45d0b12ae0dd9680fbfe9804503542c377d65838558cd0b48a795385dde"
+      }
     },
     {
       "id": "Horizon-Labs/prompt-injection-guard-small/onnx/model_quantized.onnx",
       "dir": "Horizon-Labs/prompt-injection-guard-small",
       "onnx": "onnx/model_quantized.onnx",
       "repo": "Horizon-Labs/prompt-injection-guard-small",
-      "sha256": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d"
+      "sha256": {
+        "onnx/model_quantized.onnx": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d",
+        "config.json": "d6264037c9aa4b3d821c1c9a0329572033adbdb622788ecca91c3636066d9622",
+        "special_tokens_map.json": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351",
+        "tokenizer.json": "47834a7dbbb0c4324fe9569fe47955241594a9ee539c9e478755d6fbc51e5f46"
+      }
     }
   ],
   "fit": {

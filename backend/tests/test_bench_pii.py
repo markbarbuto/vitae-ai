@@ -87,3 +87,27 @@ def test_score_heldout_refuses_without_a_frozen_entry(
     monkeypatch.setattr(bench.pii, "FROZEN", tmp_path / "frozen.json")
     assert main(["score", "--split", "heldout"]) == 2
     assert "refusing to score the held-out split" in capsys.readouterr().err
+
+
+def test_score_heldout_refuses_once_the_log_holds_a_pii_run_for_any_freeze(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    frozen = tmp_path / "frozen.json"
+    freeze(frozen)
+    log = tmp_path / "heldout-runs.jsonl"
+    log.write_text(
+        json.dumps({"tool": "pii", "frozen": "0" * 64, "at": "2026-10-19T17:52:21+00:00", "rerun": False}) + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(bench.pii, "FROZEN", frozen)
+    monkeypatch.setattr(bench.pii, "RUN_LOG", log)
+
+    def no_heldout_data(*_: object, **__: object) -> None:
+        raise AssertionError("the held-out split was read")
+
+    monkeypatch.setattr(bench.pii, "load", no_heldout_data)
+    monkeypatch.setattr(bench.pii, "score_recruiter", no_heldout_data)
+    assert main(["score", "--split", "heldout"]) == 2
+    assert capsys.readouterr().err == (
+        f"the held-out split was already scored 1 time(s), first for frozen {'0' * 64}; pass --rerun\n"
+    )

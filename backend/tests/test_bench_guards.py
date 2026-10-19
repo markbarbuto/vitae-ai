@@ -1,12 +1,32 @@
+import hashlib
+import inspect
 import json
 import random
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
+import bench.guards
 from bench.corpora import Sample
-from bench.fetch import sha256_of
-from bench.guards import FROZEN_FILES, MUTATIONS, Cascade, Model, Rate, Turns, fit_threshold, heldout_guard, two_turns
+from bench.fetch import sha256_of, source_sha256
+from bench.guards import (
+    FROZEN_FILES,
+    MUTATIONS,
+    Cascade,
+    MemoClassifier,
+    Model,
+    Rate,
+    Turns,
+    fit_threshold,
+    heldout_guard,
+    heldout_runs,
+    log_heldout_run,
+    score_identity,
+    two_turns,
+)
+from vitae.guards import injection
 from vitae.text import normalize
 
 CASCADE = Cascade(
@@ -71,7 +91,7 @@ def frozen_file(tmp_path: Path, hashes: dict[str, str]) -> Path:
 
 
 def live() -> dict[str, str]:
-    files = {name: sha256_of(path) for name, path in FROZEN_FILES.items()}
+    files = {name: source_sha256(path) for name, path in FROZEN_FILES.items()}
     return {**files, "first_model": "ab" * 32, "second_model": "cd" * 32}
 
 
@@ -88,15 +108,120 @@ def test_the_held_out_run_refuses_when_anything_changed_since_the_freeze(tmp_pat
         heldout_guard(CASCADE, rerun=False, run_log=tmp_path / "log", frozen_path=frozen)
 
 
-def test_a_second_held_out_run_for_the_same_freeze_needs_rerun(tmp_path: Path):
+def test_a_second_held_out_run_needs_rerun_even_after_a_re_freeze(tmp_path: Path):
     frozen = frozen_file(tmp_path, live())
     frozen_hash = sha256_of(frozen)
     log = tmp_path / "log"
+    log.write_text(
+        json.dumps({"tool": "pii", "frozen": "e" * 64, "at": "2026-10-19T17:52:21+00:00", "rerun": False}) + "\n"
+    )
     assert heldout_guard(CASCADE, rerun=False, run_log=log, frozen_path=frozen) == frozen_hash
-    log.write_text(json.dumps({"frozen": frozen_hash, "event": "started"}) + "\n")
-    with pytest.raises(SystemExit, match="held-out already run 1 time"):
+    with log.open("a") as appended:
+        appended.write(
+            json.dumps({"tool": "guards", "frozen": "f" * 64, "at": "2026-10-19T17:34:25+00:00", "rerun": False}) + "\n"
+        )
+    with pytest.raises(SystemExit) as raised:
         heldout_guard(CASCADE, rerun=False, run_log=log, frozen_path=frozen)
+    assert str(raised.value) == f"held-out already run 1 time(s), first for frozen {'f' * 64}. Pass --rerun."
     assert heldout_guard(CASCADE, rerun=True, run_log=log, frozen_path=frozen) == frozen_hash
+
+
+def test_a_held_out_run_appends_one_line_to_the_log_and_a_rerun_says_so(tmp_path: Path):
+    log = tmp_path / "log"
+    log_heldout_run("guards", "a" * 64, rerun=False, summary="first", run_log=log)
+    log_heldout_run("guards", "b" * 64, rerun=True, summary="second", run_log=log)
+    entries = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    assert [{k: v for k, v in entry.items() if k != "at"} for entry in entries] == [
+        {"tool": "guards", "frozen": "a" * 64, "rerun": False, "summary": "first"},
+        {"tool": "guards", "frozen": "b" * 64, "rerun": True, "summary": "second"},
+    ]
+    assert all(datetime.fromisoformat(entry["at"]).tzinfo == UTC for entry in entries)
+    assert heldout_runs("guards", log) == entries
+    assert heldout_runs("pii", log) == []
+
+
+def test_the_committed_log_closes_the_held_out_split_for_both_tools():
+    assert [(run["tool"], run["frozen"], run["rerun"]) for run in heldout_runs("guards")] == [
+        ("guards", "a8cb303d32372c8e256524f903307a9e83024584e98c0cf0dad7c2d947073cb5", False)
+    ]
+    assert [(run["tool"], run["frozen"], run["rerun"]) for run in heldout_runs("pii")] == [
+        ("pii", "8a37c184740219b682fe4a6d1060f83068b7d9140fdbd6f3b8d5df03e782b960", False)
+    ]
+
+
+SIDE = {
+    "config.json": b'{"id2label": {"0": "BENIGN", "1": "MALICIOUS"}}',
+    "special_tokens_map.json": b"{}",
+    "tokenizer.json": b"{}",
+}
+
+
+class StubClassifier:
+    value = 0.25
+
+    @classmethod
+    def load(cls, *_: object, **__: object) -> "StubClassifier":
+        return cls()
+
+    def score(self, text: str) -> float:
+        return StubClassifier.value
+
+
+def memoized(model: Model) -> float:
+    memo = MemoClassifier(model, threads=1)
+    score = memo.score("hello")
+    memo.save()
+    return score
+
+
+def stub_model(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Model:
+    monkeypatch.setattr(bench.guards, "BENCH_CACHE", tmp_path / "bench")
+    monkeypatch.setattr(bench.guards, "OnnxInjectionClassifier", StubClassifier)
+    monkeypatch.setattr(StubClassifier, "value", 0.25)
+    for name, data in SIDE.items():
+        (tmp_path / name).write_bytes(data)
+    return Model(tmp_path, "model.onnx", "gravitee-io/Llama-Prompt-Guard-2-22M-onnx", "ab" * 32)
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda path, _: (path / "tokenizer.json").write_bytes(b'{"model": {}}'),
+        lambda path, _: (path / "config.json").write_bytes(b'{"id2label": {"0": "MALICIOUS", "1": "BENIGN"}}'),
+        lambda path, _: (path / "special_tokens_map.json").write_bytes(b'{"pad_token": "x"}'),
+        lambda _, patch: patch.setattr(bench.guards, "version", lambda name: f"{name}-9.9.9", raising=False),
+        lambda _, patch: patch.setattr(injection, "WINDOW_SCORE_CODE", (injection.load_tokenizer,), raising=False),
+    ],
+    ids=["tokenizer.json", "config.json", "special_tokens_map.json", "a package version", "the scoring code"],
+)
+def test_a_memoized_score_is_reused_only_while_everything_it_depends_on_is_unchanged(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, change: Callable[[Path, pytest.MonkeyPatch], object]
+):
+    model = stub_model(tmp_path, monkeypatch)
+    assert memoized(model) == 0.25
+    StubClassifier.value = 0.75
+    assert memoized(model) == 0.25
+    change(tmp_path, monkeypatch)
+    assert memoized(model) == 0.75
+
+
+def test_the_score_identity_names_the_files_window_packages_and_code(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    model = stub_model(tmp_path, monkeypatch)
+    monkeypatch.setattr(bench.guards, "version", lambda name: f"{name}-1.0")
+    identity = score_identity(model)
+    assert {k: v for k, v in identity.items() if k != "code"} == {
+        "files": {"model.onnx": "ab" * 32, **{name: hashlib.sha256(data).hexdigest() for name, data in SIDE.items()}},
+        "window": [512, 128],
+        "packages": {"tokenizers": "tokenizers-1.0", "onnxruntime": "onnxruntime-1.0", "numpy": "numpy-1.0"},
+    }
+    assert [code.__name__ for code in injection.WINDOW_SCORE_CODE] == [
+        "load_tokenizer",
+        "_open_session",
+        "OnnxInjectionClassifier",
+        "_softmax",
+    ]
+    sources = "".join(inspect.getsource(code) for code in injection.WINDOW_SCORE_CODE)
+    assert identity["code"] == hashlib.sha256(sources.encode()).hexdigest()
 
 
 def test_the_cascade_is_scored_only_on_corpora_neither_model_trained_on():

@@ -1,7 +1,9 @@
 """The T2 harness: PII detection recall and precision per kind, and the input refusal rate on benign text.
 
 `python -m bench.pii score --split dev` from backend/. `score --split heldout` refuses to run unless
-the "pii" entry in bench/frozen.json matches the live files; `freeze` writes that entry.
+the "pii" entry in bench/frozen.json matches the live files; `freeze` writes that entry. Each held-out
+run is recorded in the committed bench/heldout-runs.jsonl, and while it holds a pii run another needs
+--rerun, whatever bench/frozen.json now says.
 
 Scoring:
 - A gold span is detected when a find_pii hit of the same kind overlaps it (entity-level recall).
@@ -28,6 +30,7 @@ from typing import Final, Literal, cast
 
 from bench.corpora import RECRUITER, hash_split, open_verified
 from bench.fetch import CACHE, load_manifest, source_sha256
+from bench.guards import RUN_LOG, heldout_runs, log_heldout_run
 from vitae.guards import Refuse
 from vitae.guards.pii import REFUSED_AT_INPUT, PiiKind, find_pii, iban_ok, luhn_ok, pii_stage
 from vitae.text import normalize
@@ -38,7 +41,6 @@ CORPORA: Final[tuple[Corpus, ...]] = ("gretel_en", "gretel_finance")
 
 BACKEND: Final = Path(__file__).resolve().parents[1]
 FROZEN: Final = Path(__file__).with_name("frozen.json")
-RUN_LOG: Final = CACHE / "bench" / "pii-heldout.jsonl"
 FROZEN_FILES: Final = ("src/vitae/guards/pii.py", "src/vitae/text.py", "bench/pii.py")
 """What a held-out number depends on: the recognisers, the normalizer the stage reads, and this scorer."""
 
@@ -411,36 +413,34 @@ def _frozen_digest() -> str:
     return hashlib.sha256(json.dumps(frozen_files(), sort_keys=True).encode()).hexdigest()
 
 
-def _previous_runs(digest: str, log: Path = RUN_LOG) -> int:
-    if not log.is_file():
-        return 0
-    return sum(json.loads(line)["frozen"] == digest for line in log.read_text(encoding="utf-8").splitlines() if line)
-
-
 def run_score(split: Split, rerun: bool, examples: int, limit: int | None) -> int:
     if split == "heldout":
         problems = frozen_problems(FROZEN)
         if problems:
             print("refusing to score the held-out split:", *problems, sep="\n  ", file=sys.stderr)
             return 2
-        digest = _frozen_digest()
-        if _previous_runs(digest) and not rerun:
-            print(f"the held-out split was already scored for frozen {digest[:12]}; pass --rerun", file=sys.stderr)
+        if (previous := heldout_runs("pii", RUN_LOG)) and not rerun:
+            print(
+                f"the held-out split was already scored {len(previous)} time(s), first for frozen "
+                f"{previous[0]['frozen']}; pass --rerun",
+                file=sys.stderr,
+            )
             return 2
     lines: list[str] = []
+    summary: list[str] = []
     for corpus in CORPORA:
         loaded = load(corpus, split, limit=limit)
-        lines.extend(render(corpus, loaded, score(corpus, loaded, examples)))
+        result = score(corpus, loaded, examples)
+        lines.extend(render(corpus, loaded, result))
+        summary.append(f"{corpus} benign input refusal {result.refusal.render().strip()}")
     rate, refusals = score_recruiter(split)
     lines.append(f"== recruiter_benign ({split} by hash): input refusal {rate.render()}")
     lines.extend(f"  refused: {item}" for item in refusals)
+    summary.append(f"recruiter input refusal {rate.render().strip()}")
+    if split == "heldout":
+        log_heldout_run("pii", _frozen_digest(), rerun=rerun, summary="; ".join(summary) + ".", run_log=RUN_LOG)
     sys.stdout.buffer.write(("\n".join(lines) + "\n").encode("utf-8"))
     sys.stdout.flush()
-    if split == "heldout":
-        RUN_LOG.parent.mkdir(parents=True, exist_ok=True)
-        record = {"frozen": _frozen_digest(), "at": time.time(), "rerun": rerun, "report": lines}
-        with RUN_LOG.open("a", encoding="utf-8") as log:
-            log.write(json.dumps(record) + "\n")
     return 0
 
 

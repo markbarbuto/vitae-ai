@@ -89,6 +89,30 @@ def test_output_rules(sentence: str, verdict: Clean | Violation):
     assert RULES.check(sentence) == verdict
 
 
+TWO_PEOPLE = OutputRules.build(
+    PROMPT,
+    allowed_links=(),
+    allowed_contacts=(),
+    allowed_names=("Alex Example", "Jane Smith"),
+    refusal=REFUSAL,
+)
+
+
+@pytest.mark.parametrize(
+    ("sentence", "verdict"),
+    [
+        ("Dear Jane Smith, hi. ", Clean()),
+        ("Dear Alex Example, hi. ", Clean()),
+        ("Dear Alex, hi. ", Clean()),
+        ("Dear Smith, hi. ", Clean()),
+        ("Dear Alex Smith, hi. ", Violation(RuleId("output.name"))),
+        ("Dear Jane Example, hi. ", Violation(RuleId("output.name"))),
+    ],
+)
+def test_a_name_is_allowed_only_when_it_belongs_to_one_listed_person(sentence: str, verdict: Clean | Violation):
+    assert TWO_PEOPLE.check(sentence) == verdict
+
+
 def test_a_clean_answer_is_released_sentence_by_sentence_then_sources_then_done():
     events = run(["I built Shift", " Notes. It runs", " offline."], Finished("complete"), SOURCES)
     assert events == [

@@ -22,6 +22,11 @@ CALIBRATION_PATH: Final = Path(__file__).with_name("calibration.json")
 WINDOW_TOKENS: Final = 512
 WINDOW_STRIDE: Final = 128
 BENIGN_LABELS: Final = frozenset({"BENIGN", "SAFE", "LEGIT", "LEGITIMATE"})
+CONFIG: Final = "config.json"
+SPECIAL_TOKENS: Final = "special_tokens_map.json"
+TOKENIZER: Final = "tokenizer.json"
+SIDE_FILES: Final = (CONFIG, SPECIAL_TOKENS, TOKENIZER)
+"""Every file OnnxInjectionClassifier.load reads from a model's directory besides the ONNX file."""
 
 
 _SHA256: Final = re.compile(r"[0-9a-f]{64}")
@@ -33,15 +38,21 @@ class ModelFile:
     """The model's directory relative to VITAE_INJECTION_MODEL_DIR, POSIX separators."""
     onnx: str
     """The ONNX file inside dir."""
-    sha256: str
-    """sha256 of that ONNX file. A different file needs its own threshold."""
+    sha256: Mapping[str, str]
+    """sha256 of every file the loader reads, by its path inside dir: the ONNX file and SIDE_FILES.
+    config.json picks the benign label and tokenizer.json the token ids, so a change to any of them
+    needs its own threshold."""
+
+    def files(self) -> tuple[str, ...]:
+        return (self.onnx, *SIDE_FILES)
 
     def problem(self, models_dir: Path) -> str | None:
-        model = models_dir / self.dir / self.onnx
-        if not model.is_file():
-            return f"No injection model at {model}. Set VITAE_INJECTION_MODEL_DIR or run `python -m bench.fetch`."
-        if hashlib.sha256(model.read_bytes()).hexdigest() != self.sha256:
-            return f"{model} is not the model {CALIBRATION_PATH} was calibrated on (sha256 {self.sha256})."
+        for name in self.files():
+            path = models_dir / self.dir / name
+            if not path.is_file():
+                return f"No injection model at {path}. Set VITAE_INJECTION_MODEL_DIR or run `python -m bench.fetch`."
+            if hashlib.sha256(path.read_bytes()).hexdigest() != self.sha256[name]:
+                return f"{path} is not the file {CALIBRATION_PATH} was calibrated on (sha256 {self.sha256[name]})."
         return None
 
 
@@ -60,22 +71,19 @@ class Calibration:
             case {
                 "injection_threshold": float() | int() as threshold,
                 "calibrated": bool() as calibrated,
-                "cascade": [
-                    {"dir": str() as first_dir, "onnx": str() as first_onnx, "sha256": str() as first_sha},
-                    {"dir": str() as second_dir, "onnx": str() as second_onnx, "sha256": str() as second_sha},
-                ],
+                "cascade": [first, second],
             } if (
                 not isinstance(threshold, bool)
                 and 0.0 <= threshold <= 1.0
-                and _SHA256.fullmatch(first_sha)
-                and _SHA256.fullmatch(second_sha)
+                and (first_model := _model_file(first)) is not None
+                and (second_model := _model_file(second)) is not None
             ):
-                first = ModelFile(first_dir, first_onnx, first_sha)
-                return cls(float(threshold), calibrated, (first, ModelFile(second_dir, second_onnx, second_sha)))
+                return cls(float(threshold), calibrated, (first_model, second_model))
             case raw:
                 raise ValueError(
                     f"{path}: needs injection_threshold, a number from 0 to 1, calibrated, true or false, and "
-                    f"cascade, two models each with dir, onnx and a lowercase hex sha256. Got {raw!r}"
+                    f"cascade, two models each with dir, onnx and sha256, an object mapping the onnx file and "
+                    f"{', '.join(SIDE_FILES)} to its lowercase hex sha256. Got {raw!r}"
                 )
 
     def model_problem(self, models_dir: Path) -> str | None:
@@ -87,6 +95,19 @@ class Calibration:
             if (problem := model.problem(models_dir)) is not None:
                 return problem
         return None
+
+
+def _model_file(raw: object) -> ModelFile | None:
+    fields = cast(dict[str, object], raw) if isinstance(raw, dict) else {}
+    directory, onnx, pinned = fields.get("dir"), fields.get("onnx"), fields.get("sha256")
+    if not (isinstance(directory, str) and isinstance(onnx, str) and isinstance(pinned, dict)):
+        return None
+    digests = cast(dict[object, object], pinned)
+    if set(digests) != {onnx, *SIDE_FILES}:
+        return None
+    if not all(isinstance(digest, str) and _SHA256.fullmatch(digest) for digest in digests.values()):
+        return None
+    return ModelFile(directory, onnx, cast(dict[str, str], digests))
 
 
 class TextClassifier(Protocol):
@@ -118,7 +139,7 @@ def _open_session(path: Path, threads: int) -> _Session:
 def load_tokenizer(model_dir: Path) -> Tokenizer:
     """model_dir's tokenizer.json, unpadded, cutting longer input into windows of WINDOW_TOKENS that
     overlap by WINDOW_STRIDE."""
-    tokenizer = Tokenizer.from_file(str(model_dir / "tokenizer.json"))
+    tokenizer = Tokenizer.from_file(str(model_dir / TOKENIZER))
     tokenizer.no_padding()
     tokenizer.enable_truncation(max_length=WINDOW_TOKENS, stride=WINDOW_STRIDE)  # pyright: ignore[reportUnknownMemberType]
     return tokenizer
@@ -136,20 +157,20 @@ class OnnxInjectionClassifier:
 
     @classmethod
     def load(cls, model_dir: Path, *, onnx_file: str = "model.onnx", threads: int = 1) -> Self:
-        """model_dir holds config.json, tokenizer.json and special_tokens_map.json; onnx_file is relative to it.
-        threads is onnxruntime's intra-op thread count for this session."""
-        config = json.loads((model_dir / "config.json").read_bytes())
+        """model_dir holds SIDE_FILES; onnx_file is relative to it. threads is onnxruntime's intra-op
+        thread count for this session."""
+        config = json.loads((model_dir / CONFIG).read_bytes())
         labels = {int(index): str(name).upper() for index, name in config["id2label"].items()}
         benign = [index for index, name in labels.items() if name in BENIGN_LABELS]
         if len(benign) != 1 or len(labels) < 2:
-            raise ValueError(f"{model_dir}/config.json: expected exactly one benign label, got {labels}")
-        special = json.loads((model_dir / "special_tokens_map.json").read_bytes())
+            raise ValueError(f"{model_dir}/{CONFIG}: expected exactly one benign label, got {labels}")
+        special = json.loads((model_dir / SPECIAL_TOKENS).read_bytes())
         pad = cast(object, special["pad_token"])
         pad_token = str(cast(dict[str, object], pad)["content"]) if isinstance(pad, dict) else str(pad)
         tokenizer = load_tokenizer(model_dir)
         pad_id = tokenizer.token_to_id(pad_token)
         if pad_id is None:
-            raise ValueError(f"{model_dir}: pad token {pad_token!r} is not in tokenizer.json")
+            raise ValueError(f"{model_dir}: pad token {pad_token!r} is not in {TOKENIZER}")
         return cls(_open_session(model_dir / onnx_file, threads), tokenizer, pad_id, benign[0])
 
     def score(self, text: str) -> float:
@@ -169,6 +190,10 @@ class OnnxInjectionClassifier:
 def _softmax(logits: NDArray[np.float32]) -> NDArray[np.float32]:
     shifted = np.exp(logits - logits.max(axis=1, keepdims=True))
     return (shifted / shifted.sum(axis=1, keepdims=True)).astype(np.float32)
+
+
+WINDOW_SCORE_CODE: Final = (load_tokenizer, _open_session, OnnxInjectionClassifier, _softmax)
+"""The code that turns one text into one model's score. bench.guards keys its score cache on its source."""
 
 
 _NOT_A_MENTION: Final = (

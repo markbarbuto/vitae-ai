@@ -23,7 +23,7 @@ def test_build_keeps_the_keys_each_rule_compares():
     built = rules()
     assert built.allowed_links == frozenset({"alex.example"})
     assert built.allowed_contacts == frozenset({"hello@alex.example", "14155550134"})
-    assert built.allowed_names == frozenset({"alex", "example"})
+    assert built.allowed_names == frozenset({frozenset({"alex", "example"})})
     assert built.refusal == "I can't answer that one."
 
 

@@ -75,8 +75,10 @@ class OutputRules:
     """From the profile, as link_key gives them. Phase 3 adds knowledge-pack URLs."""
     allowed_contacts: frozenset[str]
     """The owner's public email and phone from the profile, as contact_key gives them."""
-    allowed_names: frozenset[str]
-    """Casefolded words of the names the answer may use: the owner's, and anyone the profile lists."""
+    allowed_names: frozenset[frozenset[str]]
+    """The casefolded words of each name the answer may use, one set per person: the owner, and anyone
+    the profile lists. A name passes when its words all belong to one person, so "Alex" passes for
+    "Alex Example" but "Alex Smith" does not pass for "Alex Example" and "Jane Smith"."""
     prompt_shingles: frozenset[int]
     """Hashes of every 8-word shingle of the system prompt."""
     refusal: str
@@ -95,7 +97,7 @@ class OutputRules:
         return cls(
             allowed_links=frozenset(link_key(link) for link in allowed_links),
             allowed_contacts=frozenset(contact_key(contact) for contact in allowed_contacts),
-            allowed_names=frozenset(word for name in allowed_names for word in _WORDS.findall(name.casefold())),
+            allowed_names=frozenset(frozenset(_WORDS.findall(name.casefold())) for name in allowed_names),
             prompt_shingles=frozenset(_shingles(system_prompt)),
             refusal=refusal,
         )
@@ -114,7 +116,8 @@ class OutputRules:
         for hit in find_pii(sentence):
             value = sentence[hit.start : hit.end]
             if hit.kind is PiiKind.NAME:
-                if not set(_WORDS.findall(value.casefold())) <= self.allowed_names:
+                words = set(_WORDS.findall(value.casefold()))
+                if not any(words <= person for person in self.allowed_names):
                     return Violation(RuleId("output.name"))
             elif contact_key(value) not in self.allowed_contacts:
                 return Violation(RuleId("output.pii"))

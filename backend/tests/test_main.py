@@ -49,6 +49,30 @@ def test_main_refuses_to_start_without_the_model_file(tmp_path: Path):
     )
 
 
+def test_main_refuses_to_start_when_a_models_config_is_not_the_calibrated_one(tmp_path: Path):
+    if not all((MODELS / model["dir"] / model["onnx"]).is_file() for model in CASCADE):
+        pytest.skip("the calibrated injection models are not downloaded (python -m bench.fetch)")
+    for model in CASCADE:
+        for name in (model["onnx"], "config.json", "special_tokens_map.json", "tokenizer.json"):
+            (tmp_path / model["dir"] / name).parent.mkdir(parents=True, exist_ok=True)
+            os.link(MODELS / model["dir"] / name, tmp_path / model["dir"] / name)
+    second = CASCADE[1]
+    config = tmp_path / second["dir"] / "config.json"
+    swapped = json.loads(config.read_bytes())
+    swapped["id2label"] = {
+        index: label for index, label in zip(swapped["id2label"], reversed(swapped["id2label"].values()), strict=True)
+    }
+    config.unlink()
+    config.write_text(json.dumps(swapped), encoding="utf-8")
+
+    result = start_main({**BASE_ENV, "VITAE_INJECTION_MODEL_DIR": str(tmp_path)})
+    assert stderr_of(result).strip() == (
+        f"{config} is not the file {BACKEND / 'src' / 'vitae' / 'guards' / 'calibration.json'} was calibrated on "
+        "(sha256 d6264037c9aa4b3d821c1c9a0329572033adbdb622788ecca91c3636066d9622)."
+    )
+    assert result.returncode == 1
+
+
 def test_main_refuses_to_start_on_bad_settings_and_lists_every_problem():
     result = start_main({"VITAE_RATE_LIMITS": "ten/minute"})
     assert result.returncode == 1
