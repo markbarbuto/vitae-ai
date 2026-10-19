@@ -3,9 +3,11 @@
 // pythonExecutable path in the promptfoo configs, which differs between Windows and POSIX.
 // promptfoo picks the interpreter up from PROMPTFOO_PYTHON.
 
-import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+// Node runs Windows .cmd shims such as promptfoo only through cmd.exe, which re-parses the
+// arguments. cross-spawn escapes them for it, so each argument arrives exactly as given.
+import spawn from 'cross-spawn';
 
 const venv = path.join(import.meta.dirname, '.venv');
 const bin = path.join(venv, process.platform === 'win32' ? 'Scripts' : 'bin');
@@ -24,6 +26,7 @@ const env = {
   PROMPTFOO_PYTHON: python,
   [pathKey]: `${bin}${path.delimiter}${process.env[pathKey] ?? ''}`,
 };
-const { status, error } = spawnSync(process.argv.slice(2).join(' '), { env, shell: true, stdio: 'inherit' });
+const [command, ...args] = process.argv.slice(2);
+const { status, error } = spawn.sync(command, args, { env, stdio: 'inherit' });
 if (error) throw error;
 process.exit(status ?? 1);
