@@ -1,9 +1,11 @@
 from ipaddress import ip_address, ip_network
+from pathlib import Path
 
 import pytest
 
 from vitae.settings import (
     DirectPeer,
+    Origin,
     RateLimit,
     Settings,
     SettingsError,
@@ -29,7 +31,7 @@ def test_a_full_environment_loads_with_canonical_origins_and_defaults():
         "PATH": "/usr/bin",
     }
     assert load_settings(env) == Settings(
-        allowed_origins=frozenset({"https://owner.example", "http://localhost:5173"}),
+        allowed_origins=frozenset({Origin("https://owner.example"), Origin("http://localhost:5173")}),
         client_ip=DirectPeer(),
         rate_limits=(RateLimit(6, 60), RateLimit(60, 3600), RateLimit(200, 86400)),
         generation_slots=1,
@@ -37,7 +39,59 @@ def test_a_full_environment_loads_with_canonical_origins_and_defaults():
         session_max_turns=20,
         session_idle_s=1800,
         max_sessions=1000,
+        profile_path=Path("profile.toml"),
+        generation_url="http://localhost:8081/v1",
+        generation_model="qwen3",
+        injection_model_dir=Path(".cache/models"),
     )
+
+
+def test_the_profile_generation_server_and_model_dir_can_be_set():
+    env = {
+        **MINIMAL,
+        "VITAE_PROFILE": "profiles/example.toml",
+        "VITAE_GENERATION_URL": "HTTP://Models.Internal:8081/v1/",
+        "VITAE_GENERATION_MODEL": "qwen3-4b-instruct",
+        "VITAE_INJECTION_MODEL_DIR": "/srv/models",
+    }
+    settings = load_settings(env)
+    assert (
+        settings.profile_path,
+        settings.generation_url,
+        settings.generation_model,
+        settings.injection_model_dir,
+    ) == (
+        Path("profiles/example.toml"),
+        "http://models.internal:8081/v1",
+        "qwen3-4b-instruct",
+        Path("/srv/models"),
+    )
+
+
+def test_a_generation_url_without_a_path_is_its_origin():
+    assert load_settings({**MINIMAL, "VITAE_GENERATION_URL": "https://llm.example/"}).generation_url == (
+        "https://llm.example"
+    )
+
+
+@pytest.mark.parametrize(
+    ("raw", "problem"),
+    [
+        ("ftp://models.internal/v1", '"ftp://models.internal/v1" is not an http:// or https:// URL.'),
+        ("localhost:8081/v1", '"localhost:8081/v1" is not an http:// or https:// URL.'),
+        (
+            "http://user:pw@models.internal/v1",
+            '"http://user:pw@models.internal" has userinfo. An origin is scheme://host[:port] only.',
+        ),
+        (
+            "http://models.internal/v1?key=1",
+            '"http://models.internal/v1?key=1" has a query or fragment. '
+            "Give the API base URL, such as http://localhost:8081/v1.",
+        ),
+    ],
+)
+def test_a_generation_url_that_is_not_an_http_base_url_is_refused(raw: str, problem: str):
+    assert problems({**MINIMAL, "VITAE_GENERATION_URL": raw}) == (f"VITAE_GENERATION_URL: {problem}",)
 
 
 def test_every_bad_value_is_reported_at_once():

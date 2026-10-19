@@ -1,0 +1,39 @@
+{
+  "cascade": [
+    {
+      "dir": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+      "id": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx/model.onnx",
+      "onnx": "model.onnx",
+      "repo": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+      "sha256": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf"
+    },
+    {
+      "dir": "Horizon-Labs/prompt-injection-guard-small",
+      "id": "Horizon-Labs/prompt-injection-guard-small/onnx/model_quantized.onnx",
+      "onnx": "onnx/model_quantized.onnx",
+      "repo": "Horizon-Labs/prompt-injection-guard-small",
+      "sha256": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d"
+    }
+  ],
+  "frozen_at": "2026-10-19T17:34:07+00:00",
+  "paths": {
+    "calibration": "backend/src/vitae/guards/calibration.json",
+    "normalize": "backend/src/vitae/text.py",
+    "rules": "backend/src/vitae/guards/injection.py"
+  },
+  "pii": {
+    "at": "2026-10-19T17:34:08Z",
+    "files": {
+      "bench/pii.py": "dc9628dfcc0d951bed2b0ba6147a9f610b2108c151502aa186fa8d3f9a8d0522",
+      "src/vitae/guards/pii.py": "8822b1374a11e408fe4c99f1642e26096a54f95fedbaf30a6cb43820a4558df4",
+      "src/vitae/text.py": "0e2c439e298679b555145eda996421dfea489a8489551969f241263bb19caa9c"
+    }
+  },
+  "sha256": {
+    "calibration": "593ee89736f9b2e3203d4cdd19aac416d79863edaae3f9bb7d28dc2ebc829e75",
+    "first_model": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf",
+    "normalize": "0e2c439e298679b555145eda996421dfea489a8489551969f241263bb19caa9c",
+    "rules": "32ec112e7feed6eeeb3f5fda5980e2c73abb512b38bd0f359fa823d8b1aa93c9",
+    "second_model": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d"
+  }
+}

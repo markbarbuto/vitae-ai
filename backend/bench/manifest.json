@@ -1,0 +1,650 @@
+[
+  {
+    "source": "hf-dataset:deepset/prompt-injections",
+    "revision": "4f61ecb038e9c3fb77e21034b22511b523772cdd",
+    "path": "README.md",
+    "sha256": "d90b4518dfe06154deeec938243d1ec9119bdfbfd2105aee9cf1567999764b94",
+    "bytes": 500,
+    "licence": "CC-BY-4.0 (apache-2.0 in metadata)"
+  },
+  {
+    "source": "hf-dataset:deepset/prompt-injections",
+    "revision": "4f61ecb038e9c3fb77e21034b22511b523772cdd",
+    "path": "data/train-00000-of-00001-9564e8b05b4757ab.parquet",
+    "sha256": "2e10bc7ab30f542c97e4e83e2a5683000b5057d25ec10908784c631d44124c04",
+    "bytes": 40323,
+    "licence": "CC-BY-4.0 (apache-2.0 in metadata)"
+  },
+  {
+    "source": "hf-dataset:deepset/prompt-injections",
+    "revision": "4f61ecb038e9c3fb77e21034b22511b523772cdd",
+    "path": "data/test-00000-of-00001-701d16158af87368.parquet",
+    "sha256": "39ac797cabc157eeed58435a08593b2952bb6cb16fc394a2d383f447cc7b246e",
+    "bytes": 10892,
+    "licence": "CC-BY-4.0 (apache-2.0 in metadata)"
+  },
+  {
+    "source": "hf-dataset:Lakera/gandalf_ignore_instructions",
+    "revision": "04737b65e90a6794ec227012e4a255a7def6344b",
+    "path": "README.md",
+    "sha256": "94e2abfab9caf8cb881098d16633334c2f63069e52440aaa94d7c150a8d8455f",
+    "bytes": 2828,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:Lakera/gandalf_ignore_instructions",
+    "revision": "04737b65e90a6794ec227012e4a255a7def6344b",
+    "path": "data/train-00000-of-00001-ded53be747ff55cd.parquet",
+    "sha256": "5b6acf3e5a5998d21f8e1222bb45bbdec25a14408747b1cd63bebef4a75fa439",
+    "bytes": 36715,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:Lakera/gandalf_ignore_instructions",
+    "revision": "04737b65e90a6794ec227012e4a255a7def6344b",
+    "path": "data/validation-00000-of-00001-94481a2a09ff2fff.parquet",
+    "sha256": "f51ab3e3407a368845b0f57932cc745c09280429416d7507bd178a16326a79f6",
+    "bytes": 7464,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:Lakera/gandalf_ignore_instructions",
+    "revision": "04737b65e90a6794ec227012e4a255a7def6344b",
+    "path": "data/test-00000-of-00001-bc92128b9288a6d1.parquet",
+    "sha256": "56b646d133335ebc535266bd55dbe1b5bee7caa4b95bf49d040684b9b5dd9972",
+    "bytes": 7336,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:jackhhao/jailbreak-classification",
+    "revision": "2f2ceeb39658696fd3f462403562b6eea5306287",
+    "path": "README.md",
+    "sha256": "4698cabf6cef60b56885cdd49c6a4386909c16715e89a06ba1e80ebef8fc93be",
+    "bytes": 988,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:jackhhao/jailbreak-classification",
+    "revision": "2f2ceeb39658696fd3f462403562b6eea5306287",
+    "path": "default/jailbreak_dataset_train.csv",
+    "sha256": "a5cb24b0865ef37a248d6d82bd21026ce39c89f11abae5d26d4ae58aad3ffe40",
+    "bytes": 1690484,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:jackhhao/jailbreak-classification",
+    "revision": "2f2ceeb39658696fd3f462403562b6eea5306287",
+    "path": "default/jailbreak_dataset_test.csv",
+    "sha256": "a546ce540973d8f5ef87ce3be4bd21ee5923154b9dda86eba5a12c7fa00829da",
+    "bytes": 453350,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:reshabhs/SPML_Chatbot_Prompt_Injection",
+    "revision": "02ce8084e979bc7d4c24ee35d22ecb7f2db96ff5",
+    "path": "README.md",
+    "sha256": "8f583aa131c37be5e2a7f454bb63495bdba38c7011c75b8f8fca2151891e0327",
+    "bytes": 6091,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:reshabhs/SPML_Chatbot_Prompt_Injection",
+    "revision": "02ce8084e979bc7d4c24ee35d22ecb7f2db96ff5",
+    "path": "spml_prompt_injection.csv",
+    "sha256": "4ca6590cd8ec10832fcebee5e243acb32be5c3e79b7a260f8638eed738c784f8",
+    "bytes": 29051327,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:JailbreakBench/JBB-Behaviors",
+    "revision": "886acc352a31533ffbcf4ef22c744658688086fc",
+    "path": "README.md",
+    "sha256": "fc84ea5865e60ba15f3776ff43ace47cbbf3470775f389afbb6bdb4d6333618a",
+    "bytes": 6549,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:JailbreakBench/JBB-Behaviors",
+    "revision": "886acc352a31533ffbcf4ef22c744658688086fc",
+    "path": "data/benign-behaviors.csv",
+    "sha256": "3cda234d21a991fa309bbfea4b6d9dae31ccdf8e9d452424b6a983e4fdc33468",
+    "bytes": 20570,
+    "licence": "MIT"
+  },
+  {
+    "source": "hf-dataset:JailbreakBench/JBB-Behaviors",
+    "revision": "886acc352a31533ffbcf4ef22c744658688086fc",
+    "path": "data/harmful-behaviors.csv",
+    "sha256": "4a8ec6832056b631eb092dccc60d37a61c3d441268268888b3d006288afeffa1",
+    "bytes": 23116,
+    "licence": "MIT"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/AntiDAN.json",
+    "sha256": "98e0358270faa340c7bde66bc9ad1f696abadc0a45677370b8de0c8c01eac634",
+    "bytes": 3328,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/ChatGPT_Developer_Mode_RANTI.json",
+    "sha256": "970b7633f5d8ddb781881ae8ed3fb49fa6cbb15d5a4842ba84f8dd459d00434b",
+    "bytes": 4565,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/ChatGPT_Developer_Mode_v2.json",
+    "sha256": "b3df0ad788756e1dce40d0d77b7ccc9ab807b468e109d68632eb2ff340299a4b",
+    "bytes": 4074,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/ChatGPT_Image_Markdown.json",
+    "sha256": "b97837b81d283f52bba9ed18fee7eb045b675ff09740ff5bffdb5e778150821a",
+    "bytes": 1964,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/DAN_Jailbreak.json",
+    "sha256": "0b3f7d52339ab12b39c08870720c3a2665cb516dbb149750eac09c78e2f8b1a4",
+    "bytes": 4238,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/DUDE.json",
+    "sha256": "355757fbb4a7fa6d07af49738dec1f3d26d2c7ad9579178c2ed6d45c83310520",
+    "bytes": 2299,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/Dan_10_0.json",
+    "sha256": "bb76232973e00479992195218373d02b2b9b3d6162623036422ee7caf79fe4c2",
+    "bytes": 2990,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/Dan_11_0.json",
+    "sha256": "5920cdd9c280e7a8bd66b2effbe58dc9558f4b737da0b45cce35666804bb250d",
+    "bytes": 4750,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/Dan_6_0.json",
+    "sha256": "6671ca9023bc66d2387a275c0b42aa6047578918aae6cb52181e73bb7528fad1",
+    "bytes": 1973,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/Dan_6_2.json",
+    "sha256": "19b79eacb9cd9dca06094c373741be71e199d73734c7cba696cc6ca1780d6ccc",
+    "bytes": 2940,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/Dan_7_0.json",
+    "sha256": "b85d6e74e7262914d14894e97b3fea7c7bef678bd58ffab60bbfa85253d61c80",
+    "bytes": 1319,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/Dan_8_0.json",
+    "sha256": "62ae47c12ee52e033e1318456964cb3114318e17bb1405a2c3aa2afe46316d4b",
+    "bytes": 2926,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/Dan_9_0.json",
+    "sha256": "5c263be1049269aaa04090cde89d6ae5b6e495e11add963dcaac804ad56e35ad",
+    "bytes": 2545,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/dan/STAN.json",
+    "sha256": "91b91e958e863a43eab6331f99f0eb5d29c3534fd8d15c60ec404bdb805f0e1a",
+    "bytes": 1378,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/access_shell_commands.json",
+    "sha256": "796664622499cb2c1bf33768dd894f35a5d3e60395ef475ad7ea0e7f4b6cdb64",
+    "bytes": 393,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/domains_latentinjection.json",
+    "sha256": "2b179b6ab31284419d44cd96e50ce54dee6b55e0bf10095607ea693b9f22addf",
+    "bytes": 260,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/encoded.json",
+    "sha256": "4d1c66578dbcae6fa5d60aaa08da684d37256ff6d09462d6054fb0a7744c76b5",
+    "bytes": 465,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/example_domains_xss.json",
+    "sha256": "e573153a81d4dc244ef3e178953916946ce3534eaeeed7a8e191efff7e3dd090",
+    "bytes": 258,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/harmful_behaviors.json",
+    "sha256": "0f81f74113aed3ce6d3235fecb0910edbc47ae3855dc115f4eca0001c6fab438",
+    "bytes": 1457,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/keyedprod_win10.json",
+    "sha256": "17fce8b5a5d39ca1902a239fa79ddf4648058bb2c3409408806b0e76c38c6970",
+    "bytes": 329,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/keyedprod_win11.json",
+    "sha256": "5372849da7d4b895a9bb93f9b5ed29a403d21c45ce9603141fb596421e9a81c8",
+    "bytes": 329,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/markdown_js.json",
+    "sha256": "87db5b66ad99673bab3f8c292d6829578950385740479ae14948dc7b6a66c8da",
+    "bytes": 499,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/normal_instructions.json",
+    "sha256": "a7484d333036b00c4230a6e9b9d10a49fdbd86d13d71c6cb68a5bff195a9cf49",
+    "bytes": 367,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/python_code_execution.json",
+    "sha256": "dad706aed3b40069a21e2e50515d082cb0f138d5fcbf531f083badf39a172218",
+    "bytes": 1985,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/rude_chinese.json",
+    "sha256": "e4124d9c50ef43d5c79b1bc020627f51a82b09e69def4dc62fba0ce3fdf4f8fe",
+    "bytes": 286,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/rude_french.json",
+    "sha256": "e23eb209f35397db6d346dce18f5da57aaa6d61f1461ae2b13cefab781057fe9",
+    "bytes": 305,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/slur_terms_en.json",
+    "sha256": "8e6c7b385c91294440f0e2e449b875af0d09946771667678122ba2577965ac29",
+    "bytes": 973,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/sql_injection.json",
+    "sha256": "157a3148a6cd297890025b9f51661d32ed5d11ae9a0db783386089458814981b",
+    "bytes": 1019,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/text_en.json",
+    "sha256": "800f3bdb5e06e823b93827b6ce1775f4fe05030929ea5159769ce585cf74a06c",
+    "bytes": 669,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/web_html_js.json",
+    "sha256": "ebfd4e54f85c6d870ab68dfc3beb690958d5fb1520ec0d5c61251c6af0929318",
+    "bytes": 1273,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/data/payloads/whois_injection_contexts.json",
+    "sha256": "5bfe944dbc0a476b771abfae30b57d1ea6c617e8b91cc3a59c8e1b616b5b60ce",
+    "bytes": 32999,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "github:NVIDIA/garak",
+    "revision": "cc1215c5c301a69f115b0b2b7ef8e4172ae2e7fc",
+    "path": "garak/resources/promptinject/prompt_data.py",
+    "sha256": "81b4285dec37ccb4af7c529017687eca7f0bfd1bef546611171d6f93bb494408",
+    "bytes": 27066,
+    "licence": "Apache-2.0 (promptinject: MIT)"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "README.md",
+    "sha256": "77f2398ed759c28b69ff47b737bc62d3cc9490844dfde1dfddc10dc1b01c5821",
+    "bytes": 2512,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "LICENSE",
+    "sha256": "90ae4807183070953bd8da5d7be81c4494920fb54c74359383c8a4536bf003c3",
+    "bytes": 7553,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "NOTICE",
+    "sha256": "6d70b1303958ace2c652d10ffcb63cdd8436d49bc0e81c97373df4e329fad0c9",
+    "bytes": 111,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "config.json",
+    "sha256": "db1a6dabb734766632a009e17fa72ac4d110505f4be0651654dafc30002461cc",
+    "bytes": 1006,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "tokenizer.json",
+    "sha256": "92c8b45d0b12ae0dd9680fbfe9804503542c377d65838558cd0b48a795385dde",
+    "bytes": 8649291,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "tokenizer_config.json",
+    "sha256": "b1c18af55c6bab08e20873c67d7dc5783eda002a7934f543c4db33f3f89c5099",
+    "bytes": 1475,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "special_tokens_map.json",
+    "sha256": "b2f1b2f15f29a6b6d9d6ea4eca1675d2c231a71477f151d48f79cc83a625ba21",
+    "bytes": 970,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "model.onnx",
+    "sha256": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf",
+    "bytes": 284217797,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+    "revision": "da68d0f6023c7aeaf6b256eec549de295d5e8740",
+    "path": "model.quant.onnx",
+    "sha256": "38c3f03e30a4d5d229aeb7bf638e778322f8179d0ed0d4953eb22f88d8e0cf6b",
+    "bytes": 72542430,
+    "licence": "Llama 4 Community License"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "README.md",
+    "sha256": "37221a38df1e60ad56364c39a233c75b77fa08740ecdee248d1b4e07ccc8ef5a",
+    "bytes": 6327,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "onnx/config.json",
+    "sha256": "3093743035223c46b1497a72e939e56fa0a50afbd7bafbf7eb8aad060b8d23f8",
+    "bytes": 1014,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "onnx/tokenizer.json",
+    "sha256": "752fe5f0d5678ad563e1bd2ecc1ddf7a3ba7e2024d0ac1dba1a72975e26dff2f",
+    "bytes": 8648886,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "onnx/tokenizer_config.json",
+    "sha256": "77d3dd1a9c30397a06545251ed9274bd92e4a85feb98497eeed50c920f962274",
+    "bytes": 1392,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "onnx/special_tokens_map.json",
+    "sha256": "b2f1b2f15f29a6b6d9d6ea4eca1675d2c231a71477f151d48f79cc83a625ba21",
+    "bytes": 970,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "onnx/added_tokens.json",
+    "sha256": "dc046d04c9b0ada7ae6f1dc89c465801799acdf0c9a6aab8c15a1b2d5ca4e91f",
+    "bytes": 23,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "onnx/spm.model",
+    "sha256": "c679fbf93643d19aab7ee10c0b99e460bdbc02fedf34b92b05af343b4af586fd",
+    "bytes": 2464616,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:protectai/deberta-v3-base-prompt-injection-v2",
+    "revision": "90c9989b1a342275dd0d1a95aad283c04e075671",
+    "path": "onnx/model.onnx",
+    "sha256": "f0ea7f239f765aedbde7c9e163a7cb38a79c5b8853d3f76db5152172047b228c",
+    "bytes": 738563188,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "README.md",
+    "sha256": "9bbe0defa7b7394dfb086fcc4804c73cd0856bd47a947b834b669d945bd95608",
+    "bytes": 22498,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "config.json",
+    "sha256": "d6264037c9aa4b3d821c1c9a0329572033adbdb622788ecca91c3636066d9622",
+    "bytes": 2031,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "tokenizer.json",
+    "sha256": "47834a7dbbb0c4324fe9569fe47955241594a9ee539c9e478755d6fbc51e5f46",
+    "bytes": 34387555,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "tokenizer_config.json",
+    "sha256": "ea349495764b24570b4560fe2e4a557e5c0a47e6bce782c2409b1d6445cf8633",
+    "bytes": 46440,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "special_tokens_map.json",
+    "sha256": "baec30ea10906f16adb8c18af7a34023002c1746542612b8b41c9f09e1351351",
+    "bytes": 636,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "onnx/model.onnx",
+    "sha256": "e7aacffc0fe5b5a9362b2faea2c2aa7067d55ce88fb64b54a4dc2ec39e4523e7",
+    "bytes": 563101474,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "onnx/model_quantized.onnx",
+    "sha256": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d",
+    "bytes": 268409234,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-model:Horizon-Labs/prompt-injection-guard-small",
+    "revision": "0e3774536debbcd71dbb8534ef71451b583853b8",
+    "path": "onnx/quantization_check.json",
+    "sha256": "ea7581d0797b0053d1d78865b56d01ce23edbcac5afd8bb3a24344289aff8d0e",
+    "bytes": 392,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:gretelai/gretel-pii-masking-en-v1",
+    "revision": "e06eb1499ca8d54470f085021cd8e54f9efac7fd",
+    "path": "README.md",
+    "sha256": "3dbe0511851d81bf8e73a3c72502a8b7ff9295d51d6b38e3b5690ab989a3d8bc",
+    "bytes": 8266,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:gretelai/gretel-pii-masking-en-v1",
+    "revision": "e06eb1499ca8d54470f085021cd8e54f9efac7fd",
+    "path": "data/train-00000-of-00001.parquet",
+    "sha256": "93169003eaa23d0499dbbe26794514216af22bc1bbee71b7b1e1f23edca5ce79",
+    "bytes": 20313313,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:gretelai/gretel-pii-masking-en-v1",
+    "revision": "e06eb1499ca8d54470f085021cd8e54f9efac7fd",
+    "path": "data/validation-00000-of-00001.parquet",
+    "sha256": "3de64be0dddd0dc8a6a1a1368533cc1efe8a9ec290f87feaa064e4e78a5d22b8",
+    "bytes": 2031349,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:gretelai/gretel-pii-masking-en-v1",
+    "revision": "e06eb1499ca8d54470f085021cd8e54f9efac7fd",
+    "path": "data/test-00000-of-00001.parquet",
+    "sha256": "c89a6bffa838edb0f2fc6686bf35da4930944519ac97308b0b6e32298594b5b1",
+    "bytes": 2029143,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:gretelai/synthetic_pii_finance_multilingual",
+    "revision": "7b844d16738527a04264f50214cb426a4cea0897",
+    "path": "README.md",
+    "sha256": "1818d7f7cd27101ee9f8c932baf5183482e49e54e4b108a1ba9138db60a3e8c8",
+    "bytes": 14735,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:gretelai/synthetic_pii_finance_multilingual",
+    "revision": "7b844d16738527a04264f50214cb426a4cea0897",
+    "path": "data/train-00000-of-00001.parquet",
+    "sha256": "89bfe27e37e50098347f47f974e5e43f64a521f38171b618600ea7aa9b4fa430",
+    "bytes": 48377012,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "hf-dataset:gretelai/synthetic_pii_finance_multilingual",
+    "revision": "7b844d16738527a04264f50214cb426a4cea0897",
+    "path": "data/test-00000-of-00001.parquet",
+    "sha256": "014e1057978f030fce4f4cad7c93b9e3377fd0ded713d2bf4c7de00e3e3c8c72",
+    "bytes": 5422540,
+    "licence": "Apache-2.0"
+  },
+  {
+    "source": "github:diasks2/pragmatic_segmenter",
+    "revision": "358fe97e62902cd86fa6b85063c3bf91aa6c156a",
+    "path": "README.md",
+    "sha256": "661a99c9bb17e9ce4c41a25aa0b1f2674690be44b1f8efe9621d9774ce121ca9",
+    "bytes": 44361,
+    "licence": "MIT"
+  },
+  {
+    "source": "github:nipunsadvilkar/pySBD",
+    "revision": "5905f13be4fc95f407b98392e0ec303617a33d86",
+    "path": "tests/lang/test_english.py",
+    "sha256": "79c86bc4071b3440953498bdaa532e3e6bbe6f00181423a7d4802ff7768fbae3",
+    "bytes": 7380,
+    "licence": "MIT"
+  }
+]

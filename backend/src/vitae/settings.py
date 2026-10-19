@@ -7,7 +7,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from difflib import get_close_matches
 from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network, ip_address, ip_network
-from typing import Final, NewType
+from pathlib import Path
+from typing import Any, Final, NewType
 from urllib.parse import urlsplit
 
 Origin = NewType("Origin", str)
@@ -103,7 +104,14 @@ class Settings:
     session_max_turns: int
     session_idle_s: int
     max_sessions: int
-    """At the cap, the least recently used session is evicted."""
+    """At the cap, the least recently used session is evicted. Each session holds its last three
+    exchanges, about 8 to 13 KB at most, so this sets the sessions' memory: about 8 to 13 MB at 1000."""
+    profile_path: Path
+    generation_url: str
+    """Base URL of an OpenAI-compatible API, without a trailing slash: http://host:port/v1."""
+    generation_model: str
+    injection_model_dir: Path
+    """Root of the injection models: each model calibration.json names is a directory relative to it."""
 
     def origin_allowed(self, header: str | None) -> bool:
         """Exact string membership. The header is never parsed, so a lookalike can only fail."""
@@ -162,7 +170,8 @@ def _each[T](parse_one: Callable[[str], T]) -> Callable[[str], tuple[T, ...]]:
     """A comma-separated list parser that reports every bad entry, not just the first."""
 
     def parse(raw: str) -> tuple[T, ...]:
-        problems, values = [], []
+        problems: list[str] = []
+        values: list[T] = []
         for entry in (part.strip() for part in raw.split(",")):
             try:
                 values.append(parse_one(entry))
@@ -223,6 +232,20 @@ def _ip_header(raw: str) -> str:
     return raw
 
 
+def _generation_url(raw: str) -> str:
+    """An origin as parse_origin accepts it, plus an optional path. The trailing slash is dropped so
+    callers can append /chat/completions."""
+    try:
+        parts = urlsplit(raw)
+    except ValueError:
+        raise _Invalid(f'"{raw}" is not a valid URL.') from None
+    if parts.scheme.lower() not in _DEFAULT_PORTS or not raw.lower().startswith(f"{parts.scheme.lower()}://"):
+        raise _Invalid(f'"{raw}" is not an http:// or https:// URL.')
+    if "?" in raw or "#" in raw:
+        raise _Invalid(f'"{raw}" has a query or fragment. Give the API base URL, such as http://localhost:8081/v1.')
+    return parse_origin(f"{parts.scheme}://{parts.netloc}") + parts.path.rstrip("/")
+
+
 def _int_at_least(minimum: int) -> Callable[[str], int]:
     def parse(raw: str) -> int:
         if not _DIGITS.fullmatch(raw) or int(raw) < minimum:
@@ -239,7 +262,7 @@ class _Var[T]:
     """None means required. A default is parsed like any value, so it cannot drift from the rules."""
 
 
-_VARS: Final[Mapping[str, _Var]] = {
+_VARS: Final[Mapping[str, _Var[Any]]] = {
     "VITAE_ALLOWED_ORIGINS": _Var(_each(parse_origin), None),
     "VITAE_TRUSTED_PROXY_CIDRS": _Var(_networks, ""),
     "VITAE_CLIENT_IP_HEADER": _Var(_ip_header, "X-Real-IP"),
@@ -249,6 +272,10 @@ _VARS: Final[Mapping[str, _Var]] = {
     "VITAE_SESSION_MAX_TURNS": _Var(_int_at_least(1), "20"),
     "VITAE_SESSION_IDLE_MINUTES": _Var(_int_at_least(1), "30"),
     "VITAE_MAX_SESSIONS": _Var(_int_at_least(1), "1000"),
+    "VITAE_PROFILE": _Var(Path, "profile.toml"),
+    "VITAE_GENERATION_URL": _Var(_generation_url, "http://localhost:8081/v1"),
+    "VITAE_GENERATION_MODEL": _Var(str, "qwen3"),
+    "VITAE_INJECTION_MODEL_DIR": _Var(Path, ".cache/models"),
 }
 
 
@@ -257,14 +284,14 @@ def load_settings(env: Mapping[str, str]) -> Settings:
     empty value counts as unset. Any VITAE_* name it does not know is a problem too, so a typo
     cannot silently fall back to a default."""
     problems: list[str] = []
-    values = {}
+    values: dict[str, Any] = {}
     for name, var in _VARS.items():
-        raw = env.get(name, "").strip()
-        if not raw and var.default is None:
+        raw = env.get(name, "").strip() or var.default
+        if raw is None:
             problems.append(f"{name}: required.")
             continue
         try:
-            values[name] = var.parse(raw or var.default)
+            values[name] = var.parse(raw)
         except _Invalid as problem:
             problems.extend(f"{name}: {line}" for line in str(problem).splitlines())
 
@@ -289,6 +316,10 @@ def load_settings(env: Mapping[str, str]) -> Settings:
         session_max_turns=values["VITAE_SESSION_MAX_TURNS"],
         session_idle_s=values["VITAE_SESSION_IDLE_MINUTES"] * 60,
         max_sessions=values["VITAE_MAX_SESSIONS"],
+        profile_path=values["VITAE_PROFILE"],
+        generation_url=values["VITAE_GENERATION_URL"],
+        generation_model=values["VITAE_GENERATION_MODEL"],
+        injection_model_dir=values["VITAE_INJECTION_MODEL_DIR"],
     )
 
 
@@ -307,6 +338,9 @@ def describe(settings: Settings) -> str:
             f"Generation:       {settings.generation_slots} slots, {settings.queue_size} queue places",
             f"Sessions:         {settings.session_max_turns} turns, idle after {settings.session_idle_s} s, "
             f"at most {settings.max_sessions}",
+            f"Profile:          {settings.profile_path}",
+            f"Generation API:   {settings.generation_url}, model {settings.generation_model}",
+            f"Injection models: {settings.injection_model_dir}",
         )
     )
 

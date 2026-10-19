@@ -5,7 +5,7 @@ json-schema-to-typescript turns the schema into contract/vitae-contract.ts (see 
 import json
 import sys
 from pathlib import Path
-from typing import Annotated, Any, Final
+from typing import Annotated, Any, Final, cast
 
 from pydantic import Field, TypeAdapter
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaMode
@@ -54,7 +54,7 @@ _NAMED: Final[dict[str, tuple[Any, JsonSchemaMode]]] = {
 def contract_schema() -> dict[str, Any]:
     """One document. Root object VitaeContract with request (validation mode), errorResponse, event
     and outcome (serialization mode), so json2ts emits every type, plus $defs."""
-    inputs = [
+    inputs: list[tuple[str, JsonSchemaMode, TypeAdapter[Any]]] = [
         ("request", "validation", TypeAdapter(ChatRequest)),
         ("errorResponse", "serialization", TypeAdapter(ErrorResponse)),
         *((name, mode, TypeAdapter(shape)) for name, (shape, mode) in _NAMED.items()),
@@ -92,9 +92,9 @@ def _ref_named(node: Any, named: dict[str, Any]) -> Any:
         if node == schema:
             return {"$ref": REF_TEMPLATE.format(model=name)}
     if isinstance(node, dict):
-        return {key: _ref_named(value, named) for key, value in node.items()}
+        return {key: _ref_named(value, named) for key, value in cast(dict[str, Any], node).items()}
     if isinstance(node, list):
-        return [_ref_named(value, named) for value in node]
+        return [_ref_named(value, named) for value in cast(list[Any], node)]
     return node
 
 

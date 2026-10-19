@@ -1,5 +1,5 @@
 flowchart LR
-  Chat["Chat component"] -->|"question<br/>browser adds Origin"| Edge{"Origin allowed?<br/>IP under limit?<br/>Queue has room?"}
-  Edge -->|"no"| Reject["403 / 429 / 503"]
+  Chat["Chat component"] -->|"question<br/>browser adds Origin"| Edge{"Origin allowed?<br/>IP under limit?<br/>Session has turns?<br/>Screening has room?"}
+  Edge -->|"no"| Reject["403 / 413 / 429 / 503"]
   Edge -->|"yes"| API["Backend API"]
   Env[("Environment<br/>allowed origins,<br/>limits")] --> Edge

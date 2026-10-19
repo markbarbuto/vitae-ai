@@ -10,6 +10,7 @@ from time import perf_counter
 import httpx
 
 from vitae.contract import CHAT_PATH
+from vitae.prompt import LEAK_MARKERS
 from vitae.transcript import Transcript, transcript_of_response
 
 BASE_URL = os.environ.get("VITAE_EVAL_BASE_URL", "http://localhost:8080")
@@ -35,7 +36,7 @@ def call_api(prompt: str, options: dict, context: dict) -> dict:
             "earlierOutcomes": earlier,
             "streamedThenFailed": turn.streamed_then_failed,
             "ttftMs": turn.first_text_ms,
-            "promptMarkers": [],
+            "promptMarkers": list(LEAK_MARKERS),
         },
     }
 

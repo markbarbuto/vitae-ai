@@ -1,0 +1,13 @@
+flowchart LR
+  Sec["Security stages<br/>PII, injection,<br/>moderation"] --> Blocked["Blocked topic<br/>profile phrases"]
+  Blocked --> Avail["Availability<br/>profile phrases"]
+  Avail --> Scope["Scope<br/>task, trivia,<br/>visitor's own life"]
+  Scope --> Evidence["Evidence slot<br/>retrieval, phase 3"]
+  Evidence --> Proceed["Proceed"]
+  Blocked -.->|"blocked_topic"| Refuse["Refusal"]
+  Avail -.-> Answer["The owner's<br/>availability answer"]
+  Scope -.->|"unrelated"| Refuse
+  Evidence -.->|"insufficient_evidence"| Refuse
+  Profile[("profile.toml")] --> Blocked
+  Profile --> Avail
+  Profile --> Scope

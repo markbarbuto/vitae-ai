@@ -1,0 +1,8 @@
+flowchart LR
+  Edge["Origin, client IP,<br/>capped body"] --> Rate{"Every rate-limit<br/>window has room?"}
+  Rate -->|"no"| R429["429 rate_limited"]
+  Rate -->|"yes, counted"| Sess{"Session has<br/>turns left?"}
+  Sess -->|"no"| RS["429 session_limit"]
+  Sess -->|"yes"| Permit{"Fewer than 8 requests<br/>being screened?"}
+  Permit -->|"no"| R503["503 busy"]
+  Permit -->|"yes"| Screen["Screening permit:<br/>on to the guard threads"]

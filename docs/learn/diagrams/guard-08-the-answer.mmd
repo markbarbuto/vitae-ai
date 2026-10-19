@@ -1,0 +1,9 @@
+flowchart LR
+  Gen["Generate"] --> Prompt["Prompt<br/>canary + rules + evidence<br/>+ last 3 exchanges + question"]
+  Prompt --> Model["Generator model"]
+  Model -->|"tokens"| Split["Sentence splitter"]
+  Split --> Check{"Sentence passes<br/>output rules?"}
+  Check -->|"yes"| Text["event: text"]
+  Text --> Split
+  Check -->|"no, nothing sent yet"| Refused["event: refused<br/>output_rule"]
+  Check -->|"no, after some text"| Withheld["event: done<br/>finish withheld"]

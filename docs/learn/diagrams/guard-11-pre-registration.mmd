@@ -1,0 +1,9 @@
+flowchart LR
+  Dev[("Dev split")] --> Tune["Write rules,<br/>fit the threshold"]
+  Tune --> Cal[("calibration.json")]
+  Cal --> Freeze["bench.guards freeze<br/>hash calibration, rules,<br/>normalizer, both models"]
+  Freeze --> Frozen[("bench/frozen.json")]
+  Frozen --> Run{"Live files match<br/>and no earlier run?"}
+  Held[("Held-out split")] --> Run
+  Run -->|"yes"| Report["One scored run,<br/>logged"]
+  Run -->|"no"| Stop["Refuse to score"]

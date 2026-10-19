@@ -1,0 +1,49 @@
+{
+  "calibrated": true,
+  "injection_threshold": 0.6473675966262818,
+  "cascade": [
+    {
+      "id": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx/model.onnx",
+      "dir": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+      "onnx": "model.onnx",
+      "repo": "gravitee-io/Llama-Prompt-Guard-2-22M-onnx",
+      "sha256": "c6f4d2ebf59be36f3557ad484bf11a51f1b356f570958d1ec1cbbe322a8dfddf"
+    },
+    {
+      "id": "Horizon-Labs/prompt-injection-guard-small/onnx/model_quantized.onnx",
+      "dir": "Horizon-Labs/prompt-injection-guard-small",
+      "onnx": "onnx/model_quantized.onnx",
+      "repo": "Horizon-Labs/prompt-injection-guard-small",
+      "sha256": "61cd0741cdbfcc229e32e1de1392f352736d87d1e8b3c2b67ad9836bb7910d5d"
+    }
+  ],
+  "fit": {
+    "split": "dev",
+    "pool": "t1_gate",
+    "target_fpr": 0.01,
+    "constrained": [
+      "recruiter"
+    ],
+    "benign": 1981,
+    "refused": 2,
+    "excluded_corpora": [
+      "deepset",
+      "gandalf",
+      "jackhhao"
+    ]
+  },
+  "first_alone": {
+    "injection_threshold": 0.9899510145187379,
+    "fit": {
+      "split": "dev",
+      "pool": "t1_gate",
+      "target_fpr": 0.01,
+      "constrained": [
+        "recruiter"
+      ],
+      "benign": 3388,
+      "refused": 2,
+      "excluded_corpora": []
+    }
+  }
+}
