@@ -1,0 +1,15 @@
+event: session
+data: {"type":"session","session_id":"c2Vzc2lvbi1leGFtcGxlMQ","turns_left":19}
+
+event: started
+data: {"type":"started"}
+
+event: queued
+data: {"type":"queued","position":1}
+
+event: text
+data: {"type":"text","text":"I built Shift Notes, a handoff tool for support teams. "}
+
+event: done
+data: {"type":"done","finish":"complete"}
+

@@ -68,6 +68,15 @@
     "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
     "sources": []
   },
+  "broken-queued-after-started": {
+    "file": "broken-queued-after-started.sse",
+    "status": 200,
+    "outcome": "broken",
+    "text": "",
+    "streamedThenFailed": false,
+    "sessionId": "c2Vzc2lvbi1leGFtcGxlMQ",
+    "sources": []
+  },
   "broken-malformed": {
     "file": "broken-malformed.sse",
     "status": 200,

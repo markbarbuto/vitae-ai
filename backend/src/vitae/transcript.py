@@ -25,20 +25,21 @@ from vitae.wire import Malformed, read_events
 Outcome = str
 """One of contract.OUTCOMES."""
 
-Phase = Literal["start", "waiting", "answering", "sourced", "ended"]
+Phase = Literal["start", "waiting", "running", "answering", "sourced", "ended"]
 
-# stream = session wait* ( early | answer ); wait = queued | started;
+# stream = session queued* started? ( early | answer );
 # early = refused | availability | error; answer = text+ sources? ( done | error )
 GRAMMAR: Final[Mapping[Phase, Mapping[str, Phase]]] = {
     "start": {"session": "waiting"},
     "waiting": {
         "queued": "waiting",
-        "started": "waiting",
+        "started": "running",
         "text": "answering",
         "refused": "ended",
         "availability": "ended",
         "error": "ended",
     },
+    "running": {"text": "answering", "refused": "ended", "availability": "ended", "error": "ended"},
     "answering": {"text": "answering", "sources": "sourced", "done": "ended", "error": "ended"},
     "sourced": {"done": "ended", "error": "ended"},
     "ended": {},

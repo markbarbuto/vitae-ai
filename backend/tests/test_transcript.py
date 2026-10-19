@@ -38,6 +38,7 @@ def test_every_committed_example_folds_to_its_expected_transcript(fixture: Fixtu
         ("error-before-text", "broken", False),
         ("error-after-text", "broken", True),
         ("broken-refused-after-text", "broken", True),
+        ("broken-queued-after-started", "broken", False),
         ("broken-malformed", "broken", False),
         ("broken-no-terminal", "broken", True),
         ("rejected-rate-limited", "rejected:rate_limited", False),
