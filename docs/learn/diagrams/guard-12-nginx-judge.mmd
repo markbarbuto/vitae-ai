@@ -1,0 +1,8 @@
+flowchart LR
+  Gen["Generated forwarding<br/>headers, spoofs included"] --> Client["Client container<br/>trusted or untrusted address"]
+  Client --> Nginx["nginx realip<br/>pinned image"]
+  Nginx -->|"X-Real-IP"| App["Vitae"]
+  Nginx --> NKey["Address nginx resolved"]
+  App --> AKey["Rate-limit key<br/>Vitae derived"]
+  NKey --> Cmp{"Same key?"}
+  AKey --> Cmp

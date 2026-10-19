@@ -1,0 +1,10 @@
+flowchart LR
+  Views["The views of one Turn"] --> PG["Prompt Guard 2<br/>score p"]
+  PG --> Can{"Could (p + 1) / 2<br/>still reach t?"}
+  Can -->|"no"| Pass["Pass<br/>most messages stop here"]
+  Can -->|"yes"| HZ["Horizon<br/>score h"]
+  HZ --> Mean{"(p + h) / 2 at least t?"}
+  Mean -->|"yes"| Refuse["Refuse: injection"]
+  Mean -->|"no"| Pass
+  Cal[("calibration.json<br/>threshold t,<br/>both models' sha256")] --> Can
+  Cal --> Mean

@@ -1,0 +1,10 @@
+flowchart LR
+  Turn["Normalized Turn"] --> PII["PII<br/>card, email, phone,<br/>ID, IBAN, IP, address"]
+  PII --> Rules["Injection rules<br/>known phrasings"]
+  Rules --> Cascade["Injection classifiers<br/>two small models"]
+  Cascade --> Mod["Moderation slot<br/>Llama Guard, phase 4"]
+  Mod --> Next["On to the profile stages"]
+  PII -.->|"pii"| Refuse["Refusal,<br/>later stages skipped"]
+  Rules -.->|"injection"| Refuse
+  Cascade -.->|"injection"| Refuse
+  Mod -.->|"unsafe"| Refuse

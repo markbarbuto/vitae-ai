@@ -1,0 +1,6 @@
+flowchart LR
+  Corpora[("Public corpora<br/>pinned by sha256")] --> Split{"Official test split,<br/>or sha256 of the text"}
+  Split -->|"train, validation,<br/>hash 0 to 7"| Dev[("Dev split")]
+  Split -->|"test,<br/>hash 8 to f"| Held[("Held-out split")]
+  Dev --> Tune["Write rules,<br/>fit the threshold"]
+  Tune --> Cal[("calibration.json")]

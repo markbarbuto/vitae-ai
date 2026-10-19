@@ -11,10 +11,12 @@ from vitae.contract import (
     DoneEvent,
     ErrorEvent,
     ErrorResponse,
+    QueuedEvent,
     RefusedEvent,
     SessionEvent,
     Source,
     SourcesEvent,
+    StartedEvent,
     StreamEvent,
     TerminalEvent,
     TextEvent,
@@ -91,6 +93,8 @@ def fold(events: Iterable[tuple[float, StreamEvent | Malformed]], started: float
                 terminal = event
             case DoneEvent() | ErrorEvent():
                 terminal = event
+            case QueuedEvent() | StartedEvent() | Malformed():
+                pass
 
     outcome = _outcome(terminal) if phase == "ended" and terminal is not None else "broken"
     return Transcript(
@@ -115,9 +119,7 @@ def _outcome(terminal: TerminalEvent) -> Outcome:
             return "broken"
 
 
-def transcript_of_response(
-    status: int, lines: Iterable[str], clock: Callable[[], float], started: float
-) -> Transcript:
+def transcript_of_response(status: int, lines: Iterable[str], clock: Callable[[], float], started: float) -> Transcript:
     """A non-200 status is a rejection read from the ErrorResponse body. A 200 is a stream, each
     event stamped with clock() as it arrives."""
     if status != 200:

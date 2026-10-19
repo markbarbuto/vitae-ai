@@ -20,3 +20,7 @@ test-results/
 playwright-report/
 tests/visual/out/
 tests/evals/results/
+
+# Downloaded corpora and models (backend/bench/fetch.py)
+.cache/
+backend/mutants/

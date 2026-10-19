@@ -4,18 +4,101 @@ version = "0.1.0"
 description = "Self-hosted guarded chat engine: the HTTP and SSE contract, settings and, from phase 2, the API."
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi>=0.146.0,<1",
+    "httpx>=0.28.1,<1",
+    "numpy>=2.5.4,<3",
+    "onnxruntime>=1.31.0,<2",
     "pydantic>=2.9,<3",
+    "tokenizers>=0.23.3,<1",
+    "uvicorn[standard]>=0.54.0,<1",
 ]
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
 build-backend = "uv_build"
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-
 [dependency-groups]
 dev = [
-    "httpx>=0.28.1",
-    "pytest>=9.1.1",
+    "hypothesis>=6.170.1,<7",
+    "mutmut==3.8.0",
+    "pyarrow>=21,<23",
+    "pyright>=1.1.414,<1.2",
+    "pytest>=9.1.1,<10",
+    "pyyaml>=6,<7",
+    "ruff>=0.17.1,<0.18",
+    "schemathesis>=4.32.0,<5",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.mutmut]
+source_paths = ["src/"]
+only_mutate = [
+    "src/vitae/gate.py",
+    "src/vitae/sentences.py",
+    "src/vitae/answer.py",
+    "src/vitae/guards/pii.py",
+    "src/vitae/guards/topics.py",
+    "src/vitae/guards/injection.py",
+    "src/vitae/text.py",
+]
+also_copy = ["profiles/", "bench/"]
+pytest_add_cli_args_test_selection = [
+    "tests/test_gate.py",
+    "tests/test_gate_mutants.py",
+    "tests/test_sentences.py",
+    "tests/test_sentences_mutants.py",
+    "tests/test_answer.py",
+    "tests/test_answer_mutants.py",
+    "tests/test_pii.py",
+    "tests/test_pii_mutants.py",
+    "tests/test_topics.py",
+    "tests/test_topics_mutants.py",
+    "tests/test_injection.py",
+    "tests/test_injection_mutants.py",
+    "tests/test_text.py",
+    "tests/test_text_mutants.py",
+]
+# The 10k and 2k Hypothesis properties and the T5 memory probe run in the main pytest job. Every
+# surviving mutant reruns its tests, so here they would cost minutes; the derandomized "ci" profile
+# keeps the remaining stateful tests reproducible between runs.
+pytest_add_cli_args = [
+    "--hypothesis-profile=ci",
+    "--deselect=tests/test_answer.py::test_no_failing_or_partial_sentence_ever_reaches_the_wire",
+    "--deselect=tests/test_answer.py::test_any_chunking_releases_the_same_events_as_one_chunk",
+    "--deselect=tests/test_sentences.py::test_any_chunking_yields_the_same_sentences_as_one_chunk",
+    "--deselect=tests/test_gate.py::test_limiter_memory_per_tracked_key_fits_the_t5_budget",
+]
+
+[tool.pyright]
+include = ["src", "bench", "tests"]
+strict = ["src/vitae", "bench"]
+pythonVersion = "3.12"
+venvPath = "."
+venv = ".venv"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["contract"]
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "TID251"]
+# The repo writes long expected strings as implicit concatenations inside tuples on purpose.
+ignore = ["ISC004"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"vitae.contract.TextEvent".msg = "Only answer.Releaser builds text events. Emit text by feeding answer.Releaser."
+"vitae.contract.RefusedEvent".msg = "Refusal copy comes from the profile. Build it with answer.refusal_event(profile, reason)."
+"vitae.contract.AvailabilityEvent".msg = "The availability answer comes from the profile. Build it with answer.availability_event(profile)."
+
+[tool.ruff.lint.per-file-ignores]
+# Exempt from every banned contract event: answer.py constructs them, fixtures.py and schema.py export
+# example streams, transcript.py only matches on them, and tests build streams to check the readers.
+"src/vitae/answer.py" = ["TID251"]
+"src/vitae/fixtures.py" = ["TID251"]
+"src/vitae/schema.py" = ["TID251"]
+"src/vitae/transcript.py" = ["TID251"]
+"tests/**" = ["TID251"]

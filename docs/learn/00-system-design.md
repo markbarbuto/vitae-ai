@@ -12,7 +12,7 @@ Someone visits your portfolio. The chat component, installed from npm, sends the
 
 ## Step 2: the backend checks who is calling
 
-Each owner runs their own backend for their own site, so the backend only needs to know which websites may call it. The browser attaches an `Origin` header to every request, saying which website the page came from. The backend accepts the request only if that origin is on the allowlist the owner set, the visitor's IP is under its rate limit, and the generation queue has room.
+Each owner runs their own backend for their own site, so the backend only needs to know which websites may call it. The browser attaches an `Origin` header to every request, saying which website the page came from. The backend accepts the request only if that origin is on the allowlist the owner set, the body is small enough, the visitor's IP is under its rate limit, the conversation has turns left, and fewer than 8 requests are already being screened. The generation queue is checked later, after the guards, so a refused question never takes a place in it.
 
 ![Step 2: the backend checks who is calling](images/sd-02-the-backend-checks-who-is-calling.png)
 
@@ -20,7 +20,7 @@ A request that fails one of these checks gets a real HTTP error before any answe
 
 ## Step 3: the question passes through input guards
 
-Each guard either lets the question through or turns it into a polite refusal. The order matters. Cheap checks run first so the expensive model check only sees questions that survived.
+The backend normalizes the message once, undoing tricks such as invisible characters and look-alike letters, and every guard reads that one normalized form. Each guard either lets the question through or turns it into a polite refusal, and the first refusal wins. Security guards come first: PII, injection rules, then two small injection classifiers that run inside the API on CPU. Llama Guard follows. Then come the guards your profile drives: blocked topics, the availability answer, and the scope rule, which refuses general tasks and trivia. Cheap checks run first, so the more expensive classifiers only see questions that survived. `03-guardrail-pipeline.md` explains each stage, the threat it stops, and how the guards were tested.
 
 ![Step 3: the question passes through input guards](images/sd-03-input-guards.png)
 
@@ -32,15 +32,15 @@ Before any visitor arrives, an ingest step splits your documents into short pass
 
 ## Step 5: the model answers, and each sentence is checked before release
 
-The backend builds a prompt from the question and the top passages. The model streams tokens back. The backend holds them until a sentence is complete, checks that sentence, and only then sends it to the browser.
+The backend builds a prompt from the question, the top passages and the last few exchanges. The prompt carries a canary, a random string that should never appear in an answer. The model streams tokens back. The backend holds them until a sentence is complete, checks that sentence, and only then sends it to the browser. A sentence fails if it contains the canary, copies the hidden instructions, or has a link, contact detail or name the owner did not list. If the first sentence fails, the visitor gets a refusal. If a later one fails, the answer stops at the last sentence that passed.
 
 ![Step 5: the model answers, and each sentence is checked before release](images/sd-05-sentence-checked-answer.png)
 
-On a CPU, the model's work comes in two steps. First it reads the whole prompt. Then it writes the answer one token at a time. The visitor sees nothing until the prompt is read and the first sentence is complete. A longer prompt means a longer wait, so the token budget for retrieved passages is the main control on how fast the first words appear. Every stage that runs before generation, such as the Llama Guard check and the embedding lookup, adds to that wait too. Later phases measure each one.
+On a CPU, the model's work comes in two steps. First it reads the whole prompt. Then it writes the answer one token at a time. The visitor sees nothing until the prompt is read and the first sentence is complete. A longer prompt means a longer wait, so the token budget for retrieved passages is the main control on how fast the first words appear. Every stage that runs before generation, such as the injection classifiers, the Llama Guard check and the embedding lookup, adds to that wait too. Later phases measure each one.
 
 ## Step 6: everything together, as containers
 
-On the server, `docker compose` runs each piece as its own container. Only the reverse proxy is reachable from the internet. The three model servers are separate llama.cpp processes because each one loads a different model file.
+On the server, `docker compose` runs each piece as its own container. Only the reverse proxy is reachable from the internet. The three model servers are separate llama.cpp processes because each one loads a different model file. The two injection classifiers are small enough to run inside the API process with `onnxruntime`, so they need no server of their own.
 
 ![Step 6: everything together, as containers](images/sd-06-containers.png)
 
@@ -65,7 +65,7 @@ The latency probe is a second promptfoo config, `tests/evals/latency.yaml`, usin
 `01-concepts.md` has short diagram walkthroughs of the origin allowlist, chunking, embeddings, npm packages and Hugging Face. Each phase then adds a deeper doc:
 
 - The origin allowlist, CORS and rate limits: `02-access.md`, written in the contract phase.
-- The guard pipeline: `03-guardrails.md`, written in the backend phase.
+- The guard pipeline: `03-guardrail-pipeline.md`, written in the backend phase.
 - Chunking, embeddings and retrieval: `04-retrieval.md`, written in the retrieval phase.
 - Containers and compose: `05-orchestration.md`, written in the orchestration phase.
 - Packaging and publishing the chat component: `06-npm-package.md`, written in the UI phase.

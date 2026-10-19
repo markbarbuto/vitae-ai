@@ -1,0 +1,8 @@
+flowchart LR
+  Screen["Screening decision"] --> Kind{"Proceed?"}
+  Kind -->|"refusal or<br/>availability"| Stop["Stop<br/>spends a turn,<br/>takes no slot"]
+  Kind -->|"Proceed"| Slot{"Free slot or<br/>queue place?"}
+  Slot -->|"no"| Busy["503 busy"]
+  Slot -->|"yes"| Gen["Generate<br/>holds a lease"]
+  Stop --> S200["200 + stream:<br/>session, refused or availability"]
+  Gen --> G200["200 + stream:<br/>session, queued, started ..."]

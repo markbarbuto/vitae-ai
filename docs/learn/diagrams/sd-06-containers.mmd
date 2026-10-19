@@ -3,7 +3,7 @@ flowchart LR
     Host["Portfolio site<br/>on Vercel"] --> Chat["Chat component"]
   end
   subgraph Server["Docker host, docker compose"]
-    Proxy["Reverse proxy<br/>TLS"] --> API["API<br/>origin check, guards,<br/>retrieval, prompt"]
+    Proxy["Reverse proxy<br/>TLS"] --> API["API<br/>origin check, guards,<br/>injection classifiers,<br/>retrieval, prompt"]
     API --> GenS["llama.cpp<br/>generator"]
     API --> GuardS["llama.cpp<br/>Llama Guard"]
     API --> EmbS["llama.cpp<br/>embeddings"]
@@ -14,4 +14,5 @@ flowchart LR
   HF[("Hugging Face<br/>model files, downloaded once")] -.-> GenS
   HF -.-> GuardS
   HF -.-> EmbS
+  HF -.->|"two injection classifiers"| API
   NPM[("npm registry")] -.->|"npm install"| Host

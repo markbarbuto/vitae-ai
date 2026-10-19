@@ -7,6 +7,7 @@
     "evals": "node backend/venv.mjs promptfoo eval --env-file tests/evals/promptfoo.env --no-cache --no-share -c tests/evals/promptfooconfig.yaml",
     "evals:latency": "node backend/venv.mjs promptfoo eval --env-file tests/evals/promptfoo.env --no-cache --no-share -c tests/evals/latency.yaml -o tests/evals/results/latency.json && node tests/evals/latency-report.mjs tests/evals/results/latency.json",
     "evals:view": "promptfoo view",
+    "test:graders": "node backend/venv.mjs node --test tests/evals/assertions.test.cjs",
     "golden:capture": "node tests/visual/capture.mjs --write",
     "golden:check": "node tests/visual/capture.mjs",
     "docs:diagrams": "node docs/learn/render-diagrams.mjs"

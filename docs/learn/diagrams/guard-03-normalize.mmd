@@ -1,0 +1,8 @@
+flowchart LR
+  Throttle["Edge checks<br/>+ throttle"] --> Norm["normalize(message)"]
+  Norm --> Turn["One Turn"]
+  Turn --> Text["text<br/>invisible characters removed,<br/>look-alike letters undone"]
+  Turn --> Folded["folded<br/>lower case, no accents"]
+  Turn --> Squashed["squashed<br/>letters and digits only"]
+  Turn --> Lines["lines<br/>each line on its own"]
+  Turn --> Payloads["payloads<br/>base64, hex, URL escapes,<br/>leetspeak, rot13"]

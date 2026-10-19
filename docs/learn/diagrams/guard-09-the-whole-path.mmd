@@ -1,0 +1,13 @@
+flowchart LR
+  Req["Request"] --> Edge["Origin<br/>client IP<br/>capped body"]
+  Edge --> Thr["Throttle<br/>rate limit, session,<br/>screening permit"]
+  Thr --> Norm["Normalize"]
+  Norm --> Sec["PII, injection rules,<br/>classifiers, moderation"]
+  Sec --> Prof["Blocked topic,<br/>availability, scope"]
+  Prof --> Ev["Evidence"]
+  Ev --> Admit["Admit<br/>Stop or Generate"]
+  Admit --> Out["Prompt + canary,<br/>generation,<br/>sentence release"]
+  Out --> SSE["SSE to the browser"]
+  Edge -.-> Status["HTTP error<br/>before any stream"]
+  Thr -.-> Status
+  Admit -.-> Status

@@ -1,0 +1,7 @@
+flowchart LR
+  Req["POST /v1/chat"] --> Origin{"Origin on<br/>VITAE_ALLOWED_ORIGINS?"}
+  Origin -->|"no"| R403["403 origin_not_allowed<br/>body never read"]
+  Origin -->|"yes"| IP["Client IP<br/>header read only from<br/>a trusted proxy"]
+  IP --> Body{"Body at most 8 KB,<br/>message at most 500 chars?"}
+  Body -->|"no"| R413["413 too_long<br/>or 400 invalid_request"]
+  Body -->|"yes"| Next["On to the throttle"]
